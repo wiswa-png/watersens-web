@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat IPAL - Watersens</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
+        .sidebar-glass { background: rgba(14, 165, 233, 0.9); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <aside class="w-64 sidebar-glass text-white flex flex-col shadow-2xl transition-all duration-300">
+        <div class="p-6 text-center border-b border-white/20">
+            <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
+            <p class="text-xs font-light mt-1 opacity-80">CV. ALAM RAYA</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 mt-4">
+            <a href="dashboard.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">📊 Ringkasan Sistem</a>
+            <a href="riwayat.html" class="block px-4 py-3 bg-white/20 rounded-lg font-medium shadow-sm text-yellow-300">💧 Riwayat Data IPAL</a>
+            <div id="adminMenu" class="hidden">
+                <a href="#" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition mt-2">🏢 Manajemen Pabrik</a>
+                <a href="godmode.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-white/20">
+            <button id="btnLogout" class="w-full bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-semibold transition shadow-md">Keluar Sistem</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <header class="bg-white shadow-sm px-8 py-5 flex justify-between items-center z-10">
+            <h1 class="text-xl font-bold text-gray-800">Laporan & Riwayat Sensor</h1>
+            <div class="text-right">
+                <p id="displayId" class="text-sm font-bold text-gray-800">Memuat...</p>
+                <p id="displayRole" class="text-xs text-sky-600 font-semibold uppercase">ROLE</p>
+            </div>
+        </header>
+
+        <div class="p-8 space-y-6">
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-sky-100 border-l-4 border-l-sky-500 flex flex-wrap gap-4 items-end">
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Unit Alat</label>
+                    <select id="pilihAlat" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-sky-500 outline-none font-bold text-sky-900 cursor-pointer">
+                        <option value="" disabled selected>-- Memuat Alat... --</option>
+                    </select>
+                </div>
+                
+                <!-- PILIHAN INTERVAL WAKTU YANG SUDAH DILENGKAPI -->
+                <div>
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Interval Data</label>
+                    <select id="intervalData" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-sky-500 outline-none text-gray-700 cursor-pointer">
+                        <option value="0">Semua Data (Live)</option>
+                        <option value="600000" selected>Per 10 Menit</option>
+                        <option value="1800000">Per 30 Menit</option>
+                        <option value="3600000">Per 1 Jam</option>
+                        <option value="10800000">Per 3 Jam</option>
+                        <option value="21600000">Per 6 Jam</option>
+                        <option value="43200000">Per 12 Jam</option>
+                        <option value="86400000">Per 24 Jam (1 Hari)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Tgl Mulai</label>
+                    <input type="date" id="tglMulai" class="px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 outline-none text-gray-700">
+                </div>
+                <div>
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Tgl Akhir</label>
+                    <input type="date" id="tglAkhir" class="px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 outline-none text-gray-700">
+                </div>
+                
+                <div class="flex gap-2">
+                    <button id="btnCari" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md">
+                        Cari Data
+                    </button>
+                    <button id="btnDownload" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md flex items-center gap-2">
+                        📥 Unduh Excel
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-sky-50 text-sky-800 border-b border-sky-200">
+                            <tr>
+                                <th class="p-4 font-semibold">Waktu / Tanggal</th>
+                                <th class="p-4 font-semibold">pH</th>
+                                <th class="p-4 font-semibold">DO (mg/L)</th>
+                                <th class="p-4 font-semibold">TDS (PPM)</th>
+                                <th class="p-4 font-semibold">Suhu (°C)</th>
+                                <th class="p-4 font-semibold">Status Sistem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelRiwayat" class="divide-y divide-gray-100 text-gray-700">
+                            <tr><td colspan="6" class="p-8 text-center text-gray-400 font-medium">Silakan pilih alat dan klik "Cari Data" untuk menampilkan riwayat.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const userRole = sessionStorage.getItem("userRole");
+        const userId = sessionStorage.getItem("userId");
+        if (!userRole || !userId) window.location.href = "index.html";
+        
+        document.getElementById('displayId').innerText = userId;
+        document.getElementById('displayRole').innerText = userRole;
+        if (userRole === "developer" || userRole === "superadmin" || userRole === "admin") {
+            document.getElementById('adminMenu').classList.remove('hidden');
+        }
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            if(confirm("Keluar dari sistem?")) { sessionStorage.clear(); window.location.href = "index.html"; }
+        });
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrRBcpC9y1z4uGlWx7cqha463oN4Ufmh4",
+            authDomain: "watersens-v1.firebaseapp.com",
+            databaseURL: "https://watersens-v1-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "watersens-v1",
+            storageBucket: "watersens-v1.firebasestorage.app",
+            messagingSenderId: "252858653025",
+            appId: "1:252858653025:web:0bc7b113d2c19041a88d20"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let dataExport = [];
+
+        const muatDaftarAlat = async () => {
+            let myInduk = "";
+            if (userRole === "user") {
+                const userRef = await get(ref(db, 'users/' + userId));
+                if (userRef.exists()) myInduk = userRef.val().induk;
+            }
+            const pilihAlat = document.getElementById('pilihAlat');
+            const devicesRef = await get(ref(db, 'devices'));
+            
+            let opsiHTML = `<option value="" disabled selected>-- Pilih Unit Alat --</option>`;
+            
+            if (devicesRef.exists()) {
+                devicesRef.forEach((child) => {
+                    const idAlat = child.key;
+                    const dataAlat = child.val();
+                    const pemilik = dataAlat.pemilik;
+
+                    let bolehMelihat = false;
+                    if (userRole === 'developer' || userRole === 'superadmin') bolehMelihat = true;
+                    else if (userRole === 'admin' && pemilik === userId) bolehMelihat = true;
+                    else if (userRole === 'user' && pemilik === myInduk) bolehMelihat = true;
+
+                    if (bolehMelihat) opsiHTML += `<option value="${idAlat}">📍 ${dataAlat.nama} (${idAlat})</option>`;
+                });
+            }
+            pilihAlat.innerHTML = opsiHTML;
+        };
+        muatDaftarAlat();
+
+        document.getElementById('btnCari').addEventListener('click', async () => {
+            const idAlat = document.getElementById('pilihAlat').value;
+            const intervalWaktu = parseInt(document.getElementById('intervalData').value);
+            const tglMulai = document.getElementById('tglMulai').value;
+            const tglAkhir = document.getElementById('tglAkhir').value;
+            const tabelRiwayat = document.getElementById('tabelRiwayat');
+            const btnDownload = document.getElementById('btnDownload');
+
+            if (!idAlat) return alert("Pilih Unit Alat terlebih dahulu!");
+
+            tabelRiwayat.innerHTML = `<tr><td colspan="6" class="p-8 text-center font-bold text-sky-600">⏳ Sedang Menarik Data dari Database...</td></tr>`;
+            btnDownload.classList.add('hidden');
+            dataExport = []; 
+
+            const historyRef = await get(ref(db, `history/${idAlat}`));
+            
+            if (historyRef.exists()) {
+                let htmlRows = "";
+                let hasData = false;
+                const semuaData = [];
+
+                historyRef.forEach(child => {
+                    semuaData.push(child.val());
+                });
+
+                semuaData.sort((a, b) => b.timestamp - a.timestamp);
+
+                let waktuDiterimaTerakhir = -1;
+
+                semuaData.forEach((data) => {
+                    const dateObj = new Date(data.timestamp);
+                    const formattedDate = dateObj.toISOString().split('T')[0]; 
+                    const displayWaktu = dateObj.toLocaleString('id-ID'); 
+
+                    if (tglMulai && formattedDate < tglMulai) return;
+                    if (tglAkhir && formattedDate > tglAkhir) return;
+
+                    if (intervalWaktu > 0) {
+                        if (waktuDiterimaTerakhir !== -1 && (waktuDiterimaTerakhir - data.timestamp) < intervalWaktu) {
+                            return; 
+                        }
+                        waktuDiterimaTerakhir = data.timestamp; 
+                    }
+
+                    hasData = true;
+
+                    let status = "AMAN";
+                    let warnaStatus = "bg-emerald-100 text-emerald-700";
+                    if (data.ph < 6.5 || data.ph > 8.5 || data.do < 4.0 || data.tds > 1000 || data.suhu > 35) {
+                        status = "PERINGATAN";
+                        warnaStatus = "bg-red-100 text-red-700";
+                    }
+
+                    dataExport.push([displayWaktu, data.ph, data.do, data.tds, data.suhu, status]);
+
+                    htmlRows += `
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="p-4 font-medium text-gray-800">${displayWaktu}</td>
+                            <td class="p-4 text-gray-600">${parseFloat(data.ph).toFixed(1)}</td>
+                            <td class="p-4 text-gray-600">${parseFloat(data.do).toFixed(1)}</td>
+                            <td class="p-4 text-gray-600">${parseFloat(data.tds).toFixed(0)}</td>
+                            <td class="p-4 text-gray-600">${parseFloat(data.suhu).toFixed(1)}</td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${warnaStatus}">${status}</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                if (hasData) {
+                    tabelRiwayat.innerHTML = htmlRows;
+                    btnDownload.classList.remove('hidden'); 
+                } else {
+                    tabelRiwayat.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 font-medium">Tidak ada data ditemukan sesuai filter tersebut.</td></tr>`;
+                }
+
+            } else {
+                tabelRiwayat.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500 font-medium">Belum ada riwayat data tersimpan untuk alat ini.</td></tr>`;
+            }
+        });
+
+        document.getElementById('btnDownload').addEventListener('click', () => {
+            if (dataExport.length === 0) return;
+            let csvContent = "Waktu/Tanggal,pH,DO (mg/L),TDS (PPM),Suhu (C),Status\n";
+            dataExport.forEach(rowArray => {
+                csvContent += rowArray.join(",") + "\n";
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Laporan_IPAL_${document.getElementById('pilihAlat').value}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+    </script>
+</body>
+</html>
