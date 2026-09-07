@@ -1,0 +1,16 @@
+{
+  "name": "Watersens Monitoring IPAL",
+  "short_name": "Watersens",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3254/3254068.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

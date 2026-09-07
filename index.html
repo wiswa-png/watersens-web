@@ -37,6 +37,11 @@
             box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.2);
         }
     </style>
+    
+    <!-- IDENTITAS APLIKASI PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0ea5e9">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254068.png">
 </head>
 <body class="flex items-center justify-center p-4 relative overflow-hidden">
 
@@ -63,7 +68,16 @@
 
             <div class="mb-6">
                 <label class="block text-gray-600 text-xs font-bold mb-2 uppercase tracking-wide" for="password">Kata Sandi</label>
-                <input type="password" id="password" class="input-field w-full px-4 py-3 rounded-xl bg-white/80 border border-gray-200 focus:border-primary focus:outline-none text-gray-700" placeholder="••••••••" required>
+                <div class="relative flex items-center">
+                    <input type="password" id="password" class="input-field w-full px-4 py-3 pr-12 rounded-xl bg-white/80 border border-gray-200 focus:border-primary focus:outline-none text-gray-700" placeholder="••••••••" required>
+                    <!-- Ikon Mata -->
+                    <span id="ikonWadah" class="absolute right-4 cursor-pointer text-gray-400 hover:text-primary transition-colors" onclick="toggleSandi()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
             </div>
 
             <button type="submit" id="submitBtn" class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-3.5 px-4 rounded-xl transition duration-300 shadow-[0_8px_20px_rgba(14,165,233,0.3)] hover:shadow-[0_8px_25px_rgba(2,132,199,0.4)] transform hover:-translate-y-1">
@@ -75,6 +89,23 @@
     <div class="fixed bottom-2 right-3 text-[9px] font-mono text-gray-600 opacity-20 pointer-events-none select-none z-0">
         sys.auth.build_cv.alam_raya.2026
     </div>
+
+    <script>
+        function toggleSandi() {
+            const inputSandi = document.getElementById("password");
+            const ikonWadah = document.getElementById("ikonWadah");
+
+            if (inputSandi.type === "password") {
+                inputSandi.type = "text";
+                ikonWadah.classList.remove("text-gray-400");
+                ikonWadah.classList.add("text-primary"); 
+            } else {
+                inputSandi.type = "password";
+                ikonWadah.classList.remove("text-primary");
+                ikonWadah.classList.add("text-gray-400"); 
+            }
+        }
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -131,6 +162,15 @@
                 btn.disabled = false;
             }
         });
+    </script>
+
+    <!-- SCRIPT SERVICE WORKER UNTUK PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js');
+            });
+        }
     </script>
 </body>
 </html>
