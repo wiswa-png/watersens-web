@@ -13,7 +13,7 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Poppins', 'sans-serif'] },
-                    colors: { primary: '#0ea5e9', primaryDark: '#0284c7' }
+                    colors: { primary: '#06b6d4', primaryDark: '#0891b2', emeraldTheme: '#10b981' }
                 }
             }
         }
@@ -21,56 +21,51 @@
     
     <style>
         body { 
-            background: radial-gradient(circle at top left, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            background: radial-gradient(circle at top left, #ecfeff 0%, #cffafe 50%, #d1fae5 100%);
             min-height: 100vh; 
         }
         .glass-panel { 
-            background: rgba(255, 255, 255, 0.7); 
+            background: rgba(255, 255, 255, 0.75); 
             backdrop-filter: blur(16px); 
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.15);
         }
         .input-field { transition: all 0.3s ease; }
         .input-field:focus {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.2);
         }
     </style>
     
-    <!-- IDENTITAS APLIKASI PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0ea5e9">
+    <meta name="theme-color" content="#06b6d4">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254068.png">
 </head>
 <body class="flex items-center justify-center p-4 relative overflow-hidden">
 
-    <div class="absolute top-0 left-0 w-96 h-96 bg-white opacity-40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-primary opacity-20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+    <!-- Bola cahaya di latar belakang -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-cyan-300 opacity-30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-emerald-300 opacity-20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
 
     <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden relative z-10 p-10">
         
-        <div class="text-center mb-8">
-            <div class="mx-auto bg-gradient-to-tr from-primary to-cyan-300 w-16 h-16 rounded-full flex items-center justify-center shadow-lg mb-4 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16c3.314 0 6-2.686 6-6 0-3.1-2.67-5.903-5.263-8.12a1.12 1.12 0 00-1.474 0C8.67 11.097 6 13.9 6 17c0 3.314 2.686 6 6 6z" />
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-800 tracking-tight">Watersens</h1>
-            <p class="text-sm font-medium text-primary mt-1">Enterprise Monitoring</p>
+        <!-- 🌟 PERUBAHAN: Logo SVG dihapus, diganti dengan Logo Asli Perusahaan -->
+        <div class="text-center mb-8 flex flex-col items-center justify-center">
+            <img src="WATER SENS No Background.png" alt="Logo Watersens" class="w-36 h-auto drop-shadow-md hover:scale-105 transition-transform duration-300">
+            <!-- Teks dihapus/disembunyikan karena di dalam logo PNG sudah terdapat teks "WATERSENS" -->
         </div>
 
         <form id="loginForm">
             <div class="mb-5">
-                <label class="block text-gray-600 text-xs font-bold mb-2 uppercase tracking-wide" for="idPengguna">ID Pengguna</label>
-                <input type="text" id="idPengguna" class="input-field w-full px-4 py-3 rounded-xl bg-white/80 border border-gray-200 focus:border-primary focus:outline-none text-gray-700" placeholder="Contoh: admin123" required>
+                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-wide" for="idPengguna">ID Pengguna</label>
+                <input type="text" id="idPengguna" class="input-field w-full px-4 py-3 rounded-xl bg-white/90 border border-gray-200 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 focus:outline-none text-gray-700 font-medium" placeholder="Contoh: admin123" required>
             </div>
 
             <div class="mb-6">
-                <label class="block text-gray-600 text-xs font-bold mb-2 uppercase tracking-wide" for="password">Kata Sandi</label>
+                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-wide" for="password">Kata Sandi</label>
                 <div class="relative flex items-center">
-                    <input type="password" id="password" class="input-field w-full px-4 py-3 pr-12 rounded-xl bg-white/80 border border-gray-200 focus:border-primary focus:outline-none text-gray-700" placeholder="••••••••" required>
-                    <!-- Ikon Mata -->
+                    <input type="password" id="password" class="input-field w-full px-4 py-3 pr-12 rounded-xl bg-white/90 border border-gray-200 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 focus:outline-none text-gray-700 font-medium tracking-widest" placeholder="••••••••" required>
                     <span id="ikonWadah" class="absolute right-4 cursor-pointer text-gray-400 hover:text-primary transition-colors" onclick="toggleSandi()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -80,13 +75,13 @@
                 </div>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-3.5 px-4 rounded-xl transition duration-300 shadow-[0_8px_20px_rgba(14,165,233,0.3)] hover:shadow-[0_8px_25px_rgba(2,132,199,0.4)] transform hover:-translate-y-1">
+            <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl transition duration-300 shadow-[0_8px_20px_rgba(6,182,212,0.3)] hover:shadow-[0_8px_25px_rgba(16,185,129,0.4)] transform hover:-translate-y-1">
                 Masuk Sistem
             </button>
         </form>
     </div>
 
-    <div class="fixed bottom-2 right-3 text-[9px] font-mono text-gray-600 opacity-20 pointer-events-none select-none z-0">
+    <div class="fixed bottom-2 right-3 text-[9px] font-mono text-gray-500 opacity-40 pointer-events-none select-none z-0">
         sys.auth.build_cv.alam_raya.2026
     </div>
 

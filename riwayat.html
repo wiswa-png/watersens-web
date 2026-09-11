@@ -7,62 +7,75 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
-        .sidebar-glass { background: rgba(14, 165, 233, 0.9); backdrop-filter: blur(10px); }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+        /* 🟢 Tema Sidebar Cyan-Emerald */
+        .sidebar-glass { 
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.95) 0%, rgba(16, 185, 129, 0.95) 100%);
+            backdrop-filter: blur(10px); 
+        }
     </style>
     
-    <!-- IDENTITAS APLIKASI PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0ea5e9">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254068.png">
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden relative">
 
     <div id="overlayMenu" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
 
-    <aside id="sidebar" class="absolute z-50 md:relative w-64 h-full sidebar-glass text-white flex flex-col shadow-2xl transition-transform duration-300 -translate-x-full md:translate-x-0">
-        <div class="p-6 text-center border-b border-white/20">
-            <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
-            <p class="text-xs font-light mt-1 opacity-80">CV. ALAM RAYA</p>
+    <!-- 🌟 SIDEBAR DENGAN WATERMARK AMAN 🌟 -->
+    <aside id="sidebar" class="absolute z-50 md:relative w-64 h-full sidebar-glass text-white shadow-2xl transition-transform duration-300 -translate-x-full md:translate-x-0 overflow-hidden">
+        
+        <!-- WATERMARK BACKGROUND -->
+        <div class="absolute inset-0 pointer-events-none opacity-10" 
+             style="background-image: url('WATER SENS No Background.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
         </div>
-        <nav class="flex-1 p-4 space-y-2 mt-4">
-            <a href="dashboard.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">📊 Ringkasan Sistem</a>
-            <a href="riwayat.html" class="block px-4 py-3 bg-white/20 rounded-lg font-medium shadow-sm text-yellow-300">💧 Riwayat Data IPAL</a>
-            <div id="adminMenu" class="hidden">
-                <a href="pabrik.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition mt-2">🏢 Manajemen Pabrik</a>
-                <a href="godmode.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
+
+        <!-- BUNGKUS KONTEN MENU UTAMA -->
+        <div class="relative z-10 flex flex-col h-full w-full">
+            <div class="p-6 text-center border-b border-white/20">
+                <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
+                <p class="text-xs font-light mt-1 opacity-90">SMART WATER MONITORING</p>
             </div>
-        </nav>
-        <div class="p-4 border-t border-white/20">
-            <button id="btnLogout" class="w-full bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-semibold transition shadow-md">Keluar Sistem</button>
+            <nav class="flex-1 p-4 space-y-2 mt-4">
+                <a href="dashboard.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">📊 Ringkasan Sistem</a>
+                <a href="riwayat.html" class="block px-4 py-3 bg-white/25 rounded-lg font-bold shadow-sm text-yellow-300">💧 Riwayat Data IPAL</a>
+                <div id="adminMenu" class="hidden">
+                    <a href="pabrik.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition mt-2">🏢 Manajemen Pabrik</a>
+                    <a href="godmode.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-white/20">
+                <button id="btnLogout" class="w-full bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-semibold transition shadow-md">Keluar Sistem</button>
+            </div>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto w-full">
-        <header class="bg-white shadow-sm px-6 md:px-8 py-5 flex justify-between items-center z-10 w-full">
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto w-full relative z-0">
+        <header class="bg-white shadow-sm px-6 md:px-8 py-5 flex justify-between items-center z-10 w-full border-b border-gray-100">
             <div class="flex items-center gap-3">
-                <button id="btnMenu" class="md:hidden text-gray-700 text-3xl font-bold focus:outline-none">☰</button>
-                <h1 class="text-xl font-bold text-gray-800">Laporan & Riwayat Sensor</h1>
+                <button id="btnMenu" class="md:hidden text-cyan-600 text-3xl font-bold focus:outline-none">☰</button>
+                <h1 class="text-xl font-bold text-gray-800 tracking-tight">Laporan & Riwayat Sensor</h1>
             </div>
             <div class="text-right hidden sm:block">
-                <p id="displayId" class="text-sm font-bold text-gray-800">Memuat...</p>
-                <p id="displayRole" class="text-xs text-sky-600 font-semibold uppercase">ROLE</p>
+                <p id="displayId" class="text-sm font-bold text-cyan-700">Memuat...</p>
+                <p id="displayRole" class="text-xs text-emerald-500 font-bold uppercase tracking-wider">ROLE</p>
             </div>
         </header>
 
         <div class="p-4 md:p-8 space-y-6">
             
-            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-sky-100 border-l-4 border-l-sky-500 flex flex-wrap gap-4 items-end">
+            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-cyan-100 border-l-4 border-l-emerald-400 flex flex-wrap gap-4 items-end">
                 <div class="flex-1 min-w-[100%] md:min-w-[200px]">
                     <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Unit Alat</label>
-                    <select id="pilihAlat" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-sky-500 outline-none font-bold text-sky-900 cursor-pointer">
+                    <select id="pilihAlat" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none font-bold text-cyan-900 cursor-pointer transition">
                         <option value="" disabled selected>-- Memuat Alat... --</option>
                     </select>
                 </div>
                 
                 <div class="w-full md:w-auto">
                     <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Rentang Waktu</label>
-                    <select id="intervalData" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-sky-500 outline-none text-gray-700 cursor-pointer">
+                    <select id="intervalData" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none text-gray-700 cursor-pointer transition">
                         <option value="0" selected>Semua Data (Default)</option>
                         <option value="600000">10 Menit Terakhir</option>
                         <option value="1800000">30 Menit Terakhir</option>
@@ -76,18 +89,18 @@
 
                 <div class="w-full md:w-auto">
                     <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Tgl Mulai</label>
-                    <input type="date" id="tglMulai" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 outline-none text-gray-700">
+                    <input type="date" id="tglMulai" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none text-gray-700 transition">
                 </div>
                 <div class="w-full md:w-auto">
                     <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Tgl Akhir</label>
-                    <input type="date" id="tglAkhir" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 outline-none text-gray-700">
+                    <input type="date" id="tglAkhir" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none text-gray-700 transition">
                 </div>
                 
                 <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
-                    <button id="btnCari" class="flex-1 md:flex-none bg-sky-500 hover:bg-sky-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md">
+                    <button id="btnCari" class="flex-1 md:flex-none bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md shadow-emerald-200">
                         Cari Data
                     </button>
-                    <button id="btnDownload" class="hidden flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                    <button id="btnDownload" class="hidden flex-1 md:flex-none bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md shadow-cyan-200 flex items-center justify-center gap-2">
                         📥 Excel
                     </button>
                 </div>
@@ -96,9 +109,10 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto h-[60vh]">
                     <table class="w-full text-left border-collapse text-sm relative">
-                        <thead class="bg-sky-50 text-sky-800 border-b border-sky-200 sticky top-0 z-10">
+                        <thead class="bg-cyan-50 text-cyan-800 border-b border-cyan-200 sticky top-0 z-10">
                             <tr>
-                                <th class="p-4 font-semibold whitespace-nowrap">Waktu / Tanggal</th>
+                                <th class="p-4 font-semibold whitespace-nowrap">Tanggal</th>
+                                <th class="p-4 font-semibold whitespace-nowrap">Waktu</th>
                                 <th class="p-4 font-semibold">pH</th>
                                 <th class="p-4 font-semibold whitespace-nowrap">DO (mg/L)</th>
                                 <th class="p-4 font-semibold whitespace-nowrap">TDS (PPM)</th>
@@ -107,7 +121,7 @@
                             </tr>
                         </thead>
                         <tbody id="tabelRiwayat" class="divide-y divide-gray-100 text-gray-700">
-                            <tr><td colspan="6" class="p-8 text-center text-gray-400 font-medium">Silakan pilih alat dan klik "Cari Data".</td></tr>
+                            <tr><td colspan="7" class="p-8 text-center text-gray-400 font-medium">Silakan pilih alat dan klik "Cari Data".</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -133,7 +147,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // LINK GOOGLE SCRIPT TERBARU BOS
         const API_URL = "https://script.google.com/macros/s/AKfycbwwTpboDUZDDuQI3IZMiF1NV_gYR-gQe4U-JZsuttSMvlDMBKGlz0FLmnRvpz3Vy8Xr/exec"; 
 
         const userRole = sessionStorage.getItem("userRole");
@@ -218,7 +231,7 @@
             const tabelRiwayat = document.getElementById('tabelRiwayat');
             const btnDownload = document.getElementById('btnDownload');
 
-            tabelRiwayat.innerHTML = `<tr><td colspan="6" class="p-8 text-center font-bold text-sky-600 animate-pulse">⏳ Sedang Menarik Data dari Google Drive...</td></tr>`;
+            tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-cyan-600 animate-pulse">⏳ Sedang Menarik Data dari Google Drive...</td></tr>`;
             btnDownload.classList.add('hidden');
             dataExport = []; 
 
@@ -227,7 +240,7 @@
                 const dataCSV = await response.text();
 
                 if (dataCSV.includes("KOSONG") || dataCSV.includes("ERROR")) {
-                    tabelRiwayat.innerHTML = `<tr><td colspan="6" class="p-8 text-center font-bold text-red-500">⚠️ ${dataCSV}</td></tr>`;
+                    tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-red-500">⚠️ ${dataCSV}</td></tr>`;
                     return;
                 }
 
@@ -235,7 +248,6 @@
                 let htmlRows = "";
                 let hasData = false;
                 
-                // 🟢 WAKTU KOMPUTER SAAT INI (Agar filter sangat akurat & tidak muncul dobel)
                 const waktuSekarang = new Date().getTime();
 
                 for (let i = barisData.length - 1; i > 0; i--) {
@@ -252,11 +264,9 @@
                         const dateObj = new Date(`${tglStr}T${waktuStr}`);
                         const timestamp = dateObj.getTime();
 
-                        // Filter Tanggal
                         if (tglMulai && tglStr < tglMulai) continue;
                         if (tglAkhir && tglStr > tglAkhir) continue;
 
-                        // 🟢 FILTER X MENIT TERAKHIR
                         if (intervalWaktu > 0) {
                             if ((waktuSekarang - timestamp) > intervalWaktu) continue;
                         }
@@ -269,12 +279,12 @@
                             warnaStatus = "bg-red-100 text-red-700";
                         }
 
-                        const displayWaktu = `${tglStr} ${waktuStr}`;
-                        dataExport.push([displayWaktu, ph, doVal, tds, suhu, status]);
+                        dataExport.push([tglStr, waktuStr, ph, doVal, tds, suhu, status]);
 
                         htmlRows += `
-                            <tr class="hover:bg-gray-50 transition border-b">
-                                <td class="p-4 font-medium text-gray-800 whitespace-nowrap">${tglStr} <span class="text-sky-400 mx-1">|</span> ${waktuStr}</td>
+                            <tr class="hover:bg-cyan-50/50 transition border-b border-gray-50">
+                                <td class="p-4 font-medium text-gray-800 whitespace-nowrap">${tglStr}</td>
+                                <td class="p-4 font-bold text-cyan-600 whitespace-nowrap">${waktuStr}</td>
                                 <td class="p-4 text-gray-600 font-bold">${ph.toFixed(1)}</td>
                                 <td class="p-4 text-gray-600 font-bold">${doVal.toFixed(1)}</td>
                                 <td class="p-4 text-gray-600 font-bold">${tds.toFixed(0)}</td>
@@ -291,21 +301,23 @@
                     tabelRiwayat.innerHTML = htmlRows;
                     btnDownload.classList.remove('hidden'); 
                 } else {
-                    tabelRiwayat.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 font-medium">Tidak ada data di rentang waktu tersebut.</td></tr>`;
+                    tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-500 font-medium">Tidak ada data di rentang waktu tersebut.</td></tr>`;
                 }
 
             } catch (error) {
-                tabelRiwayat.innerHTML = `<tr><td colspan="6" class="p-8 text-center font-bold text-red-500">🚨 Gagal terhubung ke Server Drive.</td></tr>`;
+                tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-red-500">🚨 Gagal terhubung ke Server Drive.</td></tr>`;
             }
         });
 
         document.getElementById('btnDownload').addEventListener('click', () => {
             if (dataExport.length === 0) return;
             const dataToDownload = [...dataExport].reverse();
-            let csvContent = "Waktu/Tanggal,pH,DO (mg/L),TDS (PPM),Suhu (C),Status\n";
-            dataToDownload.forEach(rowArray => { csvContent += rowArray.join(",") + "\n"; });
             
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            let csvContent = "Tanggal;Waktu;pH;DO (mg/L);TDS (PPM);Suhu (°C);Status\n";
+            
+            dataToDownload.forEach(rowArray => { csvContent += rowArray.join(";") + "\n"; });
+            
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = `Laporan_Drive_${document.getElementById('pilihAlat').value}.csv`;
@@ -313,15 +325,6 @@
             link.click();
             document.body.removeChild(link);
         });
-    </script>
-
-    <!-- SCRIPT SERVICE WORKER UNTUK PWA -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js');
-            });
-        }
     </script>
 </body>
 </html>
