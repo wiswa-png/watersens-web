@@ -123,7 +123,7 @@
                 </div>
             </div>
 
-            <!-- 🌟 PANEL BATAS SENSOR GLOBAL (NEW) 🌟 -->
+            <!-- 🌟 PANEL BATAS SENSOR GLOBAL (DENGAN PENGUNCI KEAMANAN) 🌟 -->
             <div id="panelBatasSensor" class="hidden bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-cyan-100 border-l-4 border-l-blue-400 max-w-6xl mx-auto transition-all duration-300">
                 <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2">⚙️ Konfigurasi Standar Baku Mutu (Global)</h2>
                 <p class="text-sm text-gray-500 mb-6">Aturan peringatan ini akan berlaku untuk SELURUH alat dan lokasi secara otomatis.</p>
@@ -136,11 +136,11 @@
                             <div class="space-y-3">
                                 <div>
                                     <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Bawah (Min)</label>
-                                    <input type="number" step="0.1" id="limit_ph_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="6.5">
+                                    <input type="number" step="0.1" id="limit_ph_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed transition" placeholder="6.5" disabled>
                                 </div>
                                 <div>
                                     <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Atas (Max)</label>
-                                    <input type="number" step="0.1" id="limit_ph_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="8.5">
+                                    <input type="number" step="0.1" id="limit_ph_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed transition" placeholder="8.5" disabled>
                                 </div>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                             <div class="space-y-3">
                                 <div>
                                     <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Bahaya (Min)</label>
-                                    <input type="number" step="0.1" id="limit_do_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="4.0">
+                                    <input type="number" step="0.1" id="limit_do_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed transition" placeholder="4.0" disabled>
                                 </div>
                                 <p class="text-[10px] text-gray-400 italic">Nilai DO maksimal tidak dibatasi.</p>
                             </div>
@@ -161,7 +161,7 @@
                             <div class="space-y-3">
                                 <div>
                                     <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Penuh (Max)</label>
-                                    <input type="number" step="1" id="limit_tds_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="1000">
+                                    <input type="number" step="1" id="limit_tds_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed transition" placeholder="1000" disabled>
                                 </div>
                                 <p class="text-[10px] text-gray-400 italic">Nilai TDS minimal tidak dibatasi.</p>
                             </div>
@@ -172,17 +172,22 @@
                             <div class="space-y-3">
                                 <div>
                                     <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Dingin (Min)</label>
-                                    <input type="number" step="0.1" id="limit_suhu_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="20.0">
+                                    <input type="number" step="0.1" id="limit_suhu_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed transition" placeholder="20.0" disabled>
                                 </div>
                                 <div>
                                     <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Panas (Max)</label>
-                                    <input type="number" step="0.1" id="limit_suhu_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="35.0">
+                                    <input type="number" step="0.1" id="limit_suhu_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed transition" placeholder="35.0" disabled>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-end mt-4">
-                        <button type="submit" id="btnSimpanLimit" class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-3 px-8 rounded-xl transition shadow-md shadow-blue-200 w-full md:w-auto">
+                    
+                    <!-- KONTROL TOMBOL EDIT & SIMPAN -->
+                    <div class="flex justify-end mt-4 gap-3">
+                        <button type="button" id="btnUnlockEdit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-xl transition shadow-sm w-full md:w-auto">
+                            ✏️ Edit Konfigurasi
+                        </button>
+                        <button type="submit" id="btnSimpanLimit" class="hidden bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-3 px-8 rounded-xl transition shadow-md shadow-blue-200 w-full md:w-auto">
                             💾 Terapkan ke Semua Alat
                         </button>
                     </div>
@@ -640,6 +645,19 @@
 
         // 🌟 SISTEM KONFIGURASI BATAS SENSOR (GLOBAL) 🌟
         const formLimitSensor = document.getElementById('formLimitSensor');
+        const btnUnlockEdit = document.getElementById('btnUnlockEdit');
+        const btnSimpanLimit = document.getElementById('btnSimpanLimit');
+        const arrayInputLimits = ['limit_ph_min', 'limit_ph_max', 'limit_do_min', 'limit_tds_max', 'limit_suhu_min', 'limit_suhu_max'];
+
+        // Fitur Buka Gembok (Unlock) saat tombol Edit dipencet
+        btnUnlockEdit.addEventListener('click', () => {
+            arrayInputLimits.forEach(id => {
+                document.getElementById(id).disabled = false;
+            });
+            btnUnlockEdit.classList.add('hidden');
+            btnSimpanLimit.classList.remove('hidden');
+            document.getElementById('limit_ph_min').focus(); // Fokus ke kotak pertama
+        });
 
         if (userRole === 'developer' || userRole === 'superadmin') {
             onValue(ref(db, 'global_limits'), (snap) => {
@@ -664,10 +682,8 @@
 
         formLimitSensor.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btnSimpanLimit');
-            
-            btn.innerText = "Menerapkan...";
-            btn.disabled = true;
+            btnSimpanLimit.innerText = "Menerapkan...";
+            btnSimpanLimit.disabled = true;
 
             try {
                 await update(ref(db, `global_limits`), {
@@ -682,11 +698,19 @@
                 
                 await catatAktivitas("Set Standar Global", `Mengubah standar baku mutu sensor untuk seluruh alat di sistem.`);
                 alert(`✅ SUKSES! Standar baku mutu berhasil diubah. Dashboard seluruh alat akan langsung menyesuaikan.`);
+                
+                // Kunci kembali kotaknya (Lock) setelah berhasil simpan
+                arrayInputLimits.forEach(id => {
+                    document.getElementById(id).disabled = true;
+                });
+                btnSimpanLimit.classList.add('hidden');
+                btnUnlockEdit.classList.remove('hidden');
+
             } catch (error) { 
                 alert("Gagal menyimpan data: " + error.message); 
             } finally {
-                btn.innerText = "💾 Terapkan ke Semua Alat";
-                btn.disabled = false;
+                btnSimpanLimit.innerText = "💾 Terapkan ke Semua Alat";
+                btnSimpanLimit.disabled = false;
             }
         });
 
