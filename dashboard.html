@@ -22,8 +22,8 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#06b6d4">
     <!-- IKON ATAS SUDAH DIGANTI -->
-    <link rel="apple-touch-icon" href="alamraya.png">
-    <link rel="icon" type="image/png" href="alamraya.png">
+    <link rel="apple-touch-icon" href="tanpateksputih.png">
+    <link rel="icon" type="image/png" href="tanpateksputih.png">
 </head>
 <body class="flex h-screen overflow-hidden">
 
@@ -33,13 +33,13 @@
     <aside id="sidebar" class="absolute z-50 md:relative w-64 h-full sidebar-glass text-white shadow-2xl transition-transform duration-300 -translate-x-full md:translate-x-0 overflow-hidden">
         
         <div class="absolute inset-0 pointer-events-none opacity-10" 
-             style="background-image: url('alamraya.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
+             style="background-image: url('tanpateksputih.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
         </div>
 
         <div class="relative z-10 flex flex-col h-full w-full">
             <div class="p-6 text-center border-b border-white/20">
                 <!-- LOGO UTAMA SUDAH DITAMBAHKAN DI SINI -->
-                <img src="alamraya.png" alt="Logo Watersens" class="w-16 h-16 mx-auto mb-2 object-contain drop-shadow-md">
+                <img src="tanpateksputih.png" alt="Logo Watersens" class="w-16 h-16 mx-auto mb-2 object-contain drop-shadow-md">
                 
                 <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
                 <p class="text-xs font-light mt-1 opacity-90">SMART WATER MONITORING</p>
@@ -481,5 +481,21 @@
                 });
         });
     </script>
+    
+    <!-- INI DIA MESIN PWA-NYA BOS! (WAJIB ADA DI SEMUA HALAMAN TERUTAMA INDEX.HTML) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker PWA Berhasil Didaftarkan!', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('❌ Service Worker PWA Gagal Didaftarkan:', error);
+                    });
+            });
+        }
+    </script>
+
 </body>
 </html>
