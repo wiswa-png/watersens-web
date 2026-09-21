@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
-        /* 🟢 Tema Sidebar Cyan-Emerald */
         .sidebar-glass { 
             background: linear-gradient(135deg, rgba(6, 182, 212, 0.95) 0%, rgba(16, 185, 129, 0.95) 100%);
             backdrop-filter: blur(10px); 
@@ -17,21 +16,13 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0ea5e9">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254068.png">
 </head>
 <body class="flex h-screen overflow-hidden relative">
 
     <div id="overlayMenu" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
 
-    <!-- 🌟 SIDEBAR DENGAN WATERMARK AMAN 🌟 -->
     <aside id="sidebar" class="absolute z-50 md:relative w-64 h-full sidebar-glass text-white shadow-2xl transition-transform duration-300 -translate-x-full md:translate-x-0 overflow-hidden">
-        
-        <!-- WATERMARK BACKGROUND -->
-        <div class="absolute inset-0 pointer-events-none opacity-10" 
-             style="background-image: url('WATER SENS No Background.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
-        </div>
-
-        <!-- BUNGKUS KONTEN MENU UTAMA -->
+        <div class="absolute inset-0 pointer-events-none opacity-10" style="background-image: url('WATER SENS No Background.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);"></div>
         <div class="relative z-10 flex flex-col h-full w-full">
             <div class="p-6 text-center border-b border-white/20">
                 <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
@@ -42,7 +33,7 @@
                 <a href="riwayat.html" class="block px-4 py-3 bg-white/25 rounded-lg font-bold shadow-sm text-yellow-300">💧 Riwayat Data IPAL</a>
                 <div id="adminMenu" class="hidden">
                     <a href="pabrik.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition mt-2">🏢 Manajemen Pabrik</a>
-                    <a href="godmode.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
+                    <a href="godmode.html" id="menuGodmode" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
                 </div>
             </nav>
             <div class="p-4 border-t border-white/20">
@@ -76,13 +67,10 @@
                 <div class="w-full md:w-auto">
                     <label class="block text-gray-500 text-xs font-bold mb-2 uppercase">Rentang Waktu</label>
                     <select id="intervalData" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none text-gray-700 cursor-pointer transition">
-                        <option value="0" selected>Semua Data (Default)</option>
+                        <option value="0" selected>Semua Waktu (Default)</option>
                         <option value="600000">10 Menit Terakhir</option>
-                        <option value="1800000">30 Menit Terakhir</option>
                         <option value="3600000">1 Jam Terakhir</option>
-                        <option value="10800000">3 Jam Terakhir</option>
                         <option value="21600000">6 Jam Terakhir</option>
-                        <option value="43200000">12 Jam Terakhir</option>
                         <option value="86400000">24 Jam Terakhir</option>
                     </select>
                 </div>
@@ -147,7 +135,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const API_URL = "https://script.google.com/macros/s/AKfycbwwTpboDUZDDuQI3IZMiF1NV_gYR-gQe4U-JZsuttSMvlDMBKGlz0FLmnRvpz3Vy8Xr/exec"; 
+        // Pastikan URL API Apps Script Bos masih benar
+        const API_URL = "https://script.google.com/macros/s/AKfycbyaOGTdPuV88e-MZfFz8LNXfsoUavRbgFsopxLQckJMuI8vcxCDbAeCQWAkv6zxz3Gx/exec";
 
         const userRole = sessionStorage.getItem("userRole");
         const userId = sessionStorage.getItem("userId");
@@ -155,9 +144,14 @@
         
         document.getElementById('displayId').innerText = userId;
         document.getElementById('displayRole').innerText = userRole;
-        if (userRole === "developer" || userRole === "superadmin" || userRole === "admin") {
-            document.getElementById('adminMenu').classList.remove('hidden');
+
+        const adminMenu = document.getElementById('adminMenu');
+        if (adminMenu) adminMenu.classList.remove('hidden');
+        if (userRole === "user") {
+            const linkGodmode = document.querySelector('a[href="godmode.html"]');
+            if (linkGodmode) linkGodmode.style.display = "none";
         }
+
         document.getElementById('btnLogout').addEventListener('click', () => {
             if(confirm("Keluar dari sistem?")) { sessionStorage.clear(); window.location.href = "index.html"; }
         });
@@ -176,6 +170,7 @@
 
         let dataExport = [];
 
+        // 1. FILTER HAK AKSES ALAT
         const muatDaftarAlat = async () => {
             let myInduk = "";
             if (userRole === "user") {
@@ -184,8 +179,8 @@
             }
             const pilihAlat = document.getElementById('pilihAlat');
             const devicesRef = await get(ref(db, 'devices'));
-            
             let opsiHTML = `<option value="" disabled selected>-- Pilih Unit Alat --</option>`;
+            let jumlahAlat = 0;
             
             if (devicesRef.exists()) {
                 devicesRef.forEach((child) => {
@@ -198,17 +193,38 @@
                     else if (userRole === 'admin' && pemilik === userId) bolehMelihat = true;
                     else if (userRole === 'user' && pemilik === myInduk) bolehMelihat = true;
 
-                    if (bolehMelihat) opsiHTML += `<option value="${idAlat}">📍 ${dataAlat.nama || 'Tanpa Nama'} (${idAlat})</option>`;
+                    if (bolehMelihat) {
+                        // Menggunakan nama asli untuk tampilan, tapi ID untuk token
+                        const namaAlias = dataAlat.nama || idAlat;
+                        opsiHTML += `<option value="${idAlat}" data-nama="${namaAlias}">📍 ${namaAlias} (${idAlat})</option>`;
+                        jumlahAlat++;
+                    }
                 });
             }
-            pilihAlat.innerHTML = opsiHTML;
+            if (jumlahAlat > 0) {
+                pilihAlat.innerHTML = opsiHTML;
+            } else {
+                pilihAlat.innerHTML = `<option value="" disabled selected>-- Tidak ada akses alat --</option>`;
+            }
         };
         muatDaftarAlat();
 
+        function formatTanggalBaku(tglStr) {
+            if(tglStr.includes('/')) {
+                let p = tglStr.split('/');
+                if(p[0].length === 2) return `${p[2]}-${p[1]}-${p[0]}`; 
+            }
+            return tglStr;
+        }
+
+        // 2. SISTEM PENCARIAN CERDAS (MENENTUKAN MINGGU OTOMATIS)
         document.getElementById('btnCari').addEventListener('click', async () => {
-            const idAlat = document.getElementById('pilihAlat').value;
+            const dropdownAlat = document.getElementById('pilihAlat');
+            const idAlat = dropdownAlat.value; 
+            // Ambil nama folder dari atribut data-nama (misal 'pusat')
+            const namaFolderDrive = dropdownAlat.options[dropdownAlat.selectedIndex].getAttribute('data-nama') || idAlat;
+
             const intervalWaktu = parseInt(document.getElementById('intervalData').value);
-            
             let tglMulai = document.getElementById('tglMulai').value;
             let tglAkhir = document.getElementById('tglAkhir').value;
 
@@ -219,102 +235,134 @@
                 const yyyy = today.getFullYear();
                 const mm = String(today.getMonth() + 1).padStart(2, '0');
                 const dd = String(today.getDate()).padStart(2, '0');
-                const todayStr = `${yyyy}-${mm}-${dd}`; 
-                
-                tglMulai = todayStr;
-                tglAkhir = todayStr;
-                
+                tglMulai = `${yyyy}-${mm}-${dd}`; 
+                tglAkhir = `${yyyy}-${mm}-${dd}`; 
                 document.getElementById('tglMulai').value = tglMulai;
                 document.getElementById('tglAkhir').value = tglAkhir;
             }
 
+            // KECERDASAN BUATAN: Kalkulasi spesifik nama file berdasarkan rentang kalender
+            let daftarFileTerkait = new Set();
+            let dMulai = new Date(tglMulai);
+            let dAkhir = new Date(tglAkhir);
+
+            while(dMulai <= dAkhir) {
+                let t = dMulai.getDate();
+                let b = dMulai.getMonth() + 1;
+                let mg = Math.floor((t - 1) / 7) + 1;
+                daftarFileTerkait.add(`log_Mg${mg}_Bl${b}.csv`);
+                dMulai.setDate(dMulai.getDate() + 1); 
+            }
+
+            const arrFileTerkait = Array.from(daftarFileTerkait);
             const tabelRiwayat = document.getElementById('tabelRiwayat');
             const btnDownload = document.getElementById('btnDownload');
 
-            tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-cyan-600 animate-pulse">⏳ Sedang Menarik Data dari Google Drive...</td></tr>`;
+            tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-cyan-600 animate-pulse">⏳ Mencari Tepat Sasaran... Menarik ${arrFileTerkait.length} file arsip dari Drive...</td></tr>`;
             btnDownload.classList.add('hidden');
             dataExport = []; 
 
-            try {
-                const response = await fetch(`${API_URL}?idAlat=${idAlat}`);
-                const dataCSV = await response.text();
+            let semuaBarisData = [];
 
-                if (dataCSV.includes("KOSONG") || dataCSV.includes("ERROR")) {
-                    tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-red-500">⚠️ ${dataCSV}</td></tr>`;
-                    return;
-                }
-
-                const barisData = dataCSV.trim().split('\n');
-                let htmlRows = "";
-                let hasData = false;
-                
-                const waktuSekarang = new Date().getTime();
-
-                for (let i = barisData.length - 1; i > 0; i--) {
-                    const kolom = barisData[i].split(';'); 
-                    
-                    if (kolom.length >= 6) {
-                        const tglStr = kolom[0];   
-                        const waktuStr = kolom[1]; 
-                        const suhu = parseFloat(kolom[2]);
-                        const ph = parseFloat(kolom[3]);
-                        const tds = parseFloat(kolom[4]);
-                        const doVal = parseFloat(kolom[5]);
-                        
-                        const dateObj = new Date(`${tglStr}T${waktuStr}`);
-                        const timestamp = dateObj.getTime();
-
-                        if (tglMulai && tglStr < tglMulai) continue;
-                        if (tglAkhir && tglStr > tglAkhir) continue;
-
-                        if (intervalWaktu > 0) {
-                            if ((waktuSekarang - timestamp) > intervalWaktu) continue;
-                        }
-
-                        hasData = true;
-                        let status = "AMAN";
-                        let warnaStatus = "bg-emerald-100 text-emerald-700";
-                        if (ph < 6.5 || ph > 8.5 || doVal < 4.0 || tds > 1000 || suhu > 35) {
-                            status = "PERINGATAN";
-                            warnaStatus = "bg-red-100 text-red-700";
-                        }
-
-                        dataExport.push([tglStr, waktuStr, ph, doVal, tds, suhu, status]);
-
-                        htmlRows += `
-                            <tr class="hover:bg-cyan-50/50 transition border-b border-gray-50">
-                                <td class="p-4 font-medium text-gray-800 whitespace-nowrap">${tglStr}</td>
-                                <td class="p-4 font-bold text-cyan-600 whitespace-nowrap">${waktuStr}</td>
-                                <td class="p-4 text-gray-600 font-bold">${ph.toFixed(1)}</td>
-                                <td class="p-4 text-gray-600 font-bold">${doVal.toFixed(1)}</td>
-                                <td class="p-4 text-gray-600 font-bold">${tds.toFixed(0)}</td>
-                                <td class="p-4 text-gray-600 font-bold">${suhu.toFixed(1)}</td>
-                                <td class="p-4">
-                                    <span class="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${warnaStatus}">${status}</span>
-                                </td>
-                            </tr>
-                        `;
+            // Hanya menarik file yang berkaitan dengan kalender yang dipilih
+            for(let i=0; i<arrFileTerkait.length; i++) {
+                let namaFile = arrFileTerkait[i];
+                try {
+                    let response = await fetch(`${API_URL}?token=${namaFolderDrive}&filename=${namaFile}`);
+                    let text = await response.text();
+                    if (!text.includes("KOSONG") && !text.includes("ERROR") && !text.includes("<html")) {
+                        let baris = text.trim().split('\n');
+                        baris.forEach(b => {
+                            if(b.includes(';') && !b.toLowerCase().includes('tanggal')) {
+                                semuaBarisData.push(b);
+                            }
+                        });
                     }
+                } catch(e) {
+                    console.warn(`Gagal memuat arsip: ${namaFile}`);
                 }
+            }
 
-                if (hasData) {
-                    tabelRiwayat.innerHTML = htmlRows;
-                    btnDownload.classList.remove('hidden'); 
-                } else {
-                    tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-500 font-medium">Tidak ada data di rentang waktu tersebut.</td></tr>`;
+            if(semuaBarisData.length === 0) {
+                tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-red-500">⚠️ Tidak ada data direkam pada rentang waktu/tanggal ini. Pastikan alat menyala.</td></tr>`;
+                return;
+            }
+
+            // Urutkan Terbaru di Atas
+            semuaBarisData.sort((a, b) => {
+                let A = a.split(';'); let B = b.split(';');
+                let valA = formatTanggalBaku(A[0]) + A[1];
+                let valB = formatTanggalBaku(B[0]) + B[1];
+                return valB.localeCompare(valA); 
+            });
+
+            let htmlRows = "";
+            let hasData = false;
+            const waktuSekarang = new Date().getTime();
+
+            // Masukkan ke Tabel HTML
+            semuaBarisData.forEach(baris => {
+                const kolom = baris.split(';');
+                if (kolom.length >= 6) {
+                    const tglAsli = kolom[0].trim();
+                    const tglBaku = formatTanggalBaku(tglAsli); 
+                    const waktuStr = kolom[1].trim(); 
+                    const ph = parseFloat(kolom[2]);
+                    const doVal = parseFloat(kolom[3]);
+                    const tds = parseFloat(kolom[4]);
+                    const suhu = parseFloat(kolom[5]);
+
+                    // Double Filter Tanggal
+                    if (tglBaku < tglMulai) return;
+                    if (tglBaku > tglAkhir) return;
+
+                    // Filter Jam 
+                    const dateObj = new Date(`${tglBaku}T${waktuStr}`);
+                    const timestamp = dateObj.getTime();
+                    if (intervalWaktu > 0) {
+                        if ((waktuSekarang - timestamp) > intervalWaktu) return;
+                    }
+
+                    hasData = true;
+                    let status = "AMAN";
+                    let warnaStatus = "bg-emerald-100 text-emerald-700";
+                    if (ph < 6.5 || ph > 8.5 || doVal < 4.0 || tds > 1000 || suhu > 35) {
+                        status = "PERINGATAN";
+                        warnaStatus = "bg-red-100 text-red-700";
+                    }
+
+                    dataExport.push([tglAsli, waktuStr, ph, doVal, tds, suhu, status]);
+
+                    htmlRows += `
+                        <tr class="hover:bg-cyan-50/50 transition border-b border-gray-50">
+                            <td class="p-4 font-medium text-gray-800 whitespace-nowrap">${tglAsli}</td>
+                            <td class="p-4 font-bold text-cyan-600 whitespace-nowrap">${waktuStr}</td>
+                            <td class="p-4 text-gray-600 font-bold">${ph.toFixed(1)}</td>
+                            <td class="p-4 text-gray-600 font-bold">${doVal.toFixed(1)}</td>
+                            <td class="p-4 text-gray-600 font-bold">${tds.toFixed(0)}</td>
+                            <td class="p-4 text-gray-600 font-bold">${suhu.toFixed(1)}</td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${warnaStatus}">${status}</span>
+                            </td>
+                        </tr>
+                    `;
                 }
+            });
 
-            } catch (error) {
-                tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold text-red-500">🚨 Gagal terhubung ke Server Drive.</td></tr>`;
+            if (hasData) {
+                tabelRiwayat.innerHTML = htmlRows;
+                btnDownload.classList.remove('hidden'); 
+            } else {
+                tabelRiwayat.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-500 font-medium">Tidak ada data lolos filter rentang waktu "${document.getElementById('intervalData').options[document.getElementById('intervalData').selectedIndex].text}".</td></tr>`;
             }
         });
 
+        // 3. DOWNLOAD EXCEL
         document.getElementById('btnDownload').addEventListener('click', () => {
             if (dataExport.length === 0) return;
-            const dataToDownload = [...dataExport].reverse();
+            const dataToDownload = [...dataExport].reverse(); // Kembalikan urutan kronologis
             
             let csvContent = "Tanggal;Waktu;pH;DO (mg/L);TDS (PPM);Suhu (°C);Status\n";
-            
             dataToDownload.forEach(rowArray => { csvContent += rowArray.join(";") + "\n"; });
             
             const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });

@@ -38,7 +38,7 @@
                 <a href="riwayat.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">💧 Riwayat Data IPAL</a>
                 <div id="adminMenu">
                     <a href="pabrik.html" class="block px-4 py-3 bg-white/25 rounded-lg font-bold shadow-sm text-yellow-300 mt-2">🏢 Manajemen Pabrik</a>
-                    <a href="godmode.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
+                    <a href="godmode.html" id="menuGodmode" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
                 </div>
             </nav>
             <div class="p-4 border-t border-white/20">
@@ -80,7 +80,12 @@
                 <div class="space-y-6 lg:col-span-1">
                     
                     <!-- Form Profil Perusahaan -->
-                    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 relative">
+                        <!-- Indikator Hanya Baca untuk User -->
+                        <div id="indikatorReadOnly" class="hidden absolute top-4 right-4 bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-1 rounded border border-gray-200">
+                            🔒 HANYA BACA
+                        </div>
+                        
                         <h3 class="text-base font-bold text-gray-800 mb-4 border-b pb-2">🏢 Identitas Perusahaan</h3>
                         <form id="formProfil" class="space-y-4">
                             <div>
@@ -136,7 +141,7 @@
                                     <th class="p-4 font-semibold w-32 whitespace-nowrap">Tanggal</th>
                                     <th class="p-4 font-semibold">Deskripsi Kegiatan</th>
                                     <th class="p-4 font-semibold w-40">Teknisi</th>
-                                    <th class="p-4 font-semibold w-24 text-center">Aksi</th>
+                                    <th id="headerAksi" class="p-4 font-semibold w-24 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tabelPerawatan" class="divide-y divide-gray-100 text-gray-700">
@@ -164,22 +169,27 @@
         if(overlayMenu) overlayMenu.addEventListener('click', toggleMenu);
     </script>
 
+    <!-- SCRIPT FIREBASE DAN LOGIKA HALAMAN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const userRole = sessionStorage.getItem("userRole");
         const userId = sessionStorage.getItem("userId");
-        if (!userRole || !userId) window.location.href = "index.html";
         
-        if (userRole === "user") {
-            alert("Akses Ditolak! Hanya jajaran Admin yang dapat mengakses Manajemen Pabrik.");
-            window.location.href = "dashboard.html";
-        }
+        if (!userRole || !userId) window.location.href = "index.html";
 
         document.getElementById('displayId').innerText = userId;
         document.getElementById('displayRole').innerText = userRole;
         document.getElementById('adminMenu').classList.remove('hidden');
+
+        // Sembunyikan menu Godmode & tampilkan label "Hanya Baca" jika yang login adalah User
+        if (userRole === "user") {
+            const menuGodmode = document.getElementById('menuGodmode');
+            if (menuGodmode) menuGodmode.style.display = 'none';
+            document.getElementById('indikatorReadOnly').classList.remove('hidden');
+        }
+
         document.getElementById('btnLogout').addEventListener('click', () => {
             if(confirm("Keluar dari sistem?")) { sessionStorage.clear(); window.location.href = "index.html"; }
         });
@@ -196,8 +206,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- FUNGSI PENGENDALI TOMBOL EDIT/SIMPAN ---
+        // --- FUNGSI PENGENDALI TOMBOL EDIT/SIMPAN (DENGAN KUNCI KEAMANAN RBAC) ---
         const aturModeProfil = (mode) => {
+            // PAKSA KUNCI: Jika user, mode SELALU 'lihat' apapun yang terjadi
+            if (userRole === "user") {
+                mode = 'lihat';
+            }
+
             const btn = document.getElementById('btnSimpanProfil');
             const inputs = [document.getElementById('namaPerusahaan'), document.getElementById('kontakPerusahaan'), document.getElementById('alamatPerusahaan')];
 
@@ -212,9 +227,24 @@
                 btn.type = "submit";
                 btn.className = "w-full bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold py-2.5 rounded-xl transition shadow-md shadow-emerald-200";
             }
+
+            // Kunci tombol profil secara fisik agar hilang jika yang login adalah User
+            if (userRole === "user") {
+                btn.style.display = "none";
+            } else {
+                btn.style.display = "block";
+            }
         };
 
+        // --- PERBAIKAN: Fungsi Filter Alat ---
         const muatDaftarAlat = async () => {
+            // 1. Cari Induk/Atasan jika dia adalah user
+            let myInduk = "";
+            if (userRole === "user") {
+                const userRef = await get(ref(db, 'users/' + userId));
+                if (userRef.exists()) myInduk = userRef.val().induk;
+            }
+
             const pilihAlat = document.getElementById('pilihAlat');
             const devicesRef = await get(ref(db, 'devices'));
             let opsiHTML = `<option value="" disabled selected>-- Pilih Unit Alat --</option>`;
@@ -225,13 +255,26 @@
                     const idAlat = child.key;
                     const dataAlat = child.val();
                     const pemilik = dataAlat.pemilik;
-                    if (userRole === 'developer' || userRole === 'superadmin' || (userRole === 'admin' && pemilik === userId)) {
-                        opsiHTML += `<option value="${idAlat}">📍 ${dataAlat.nama} (${idAlat})</option>`;
+
+                    // 2. Evaluasi Hak Akses Persis Seperti Dashboard
+                    let bolehMelihat = false;
+                    if (userRole === 'developer' || userRole === 'superadmin') bolehMelihat = true;
+                    else if (userRole === 'admin' && pemilik === userId) bolehMelihat = true;
+                    else if (userRole === 'user' && pemilik === myInduk) bolehMelihat = true;
+                    
+                    if (bolehMelihat) {
+                        const namaAlias = dataAlat.nama || idAlat;
+                        opsiHTML += `<option value="${idAlat}" data-nama="${namaAlias}">📍 ${namaAlias} (${idAlat})</option>`;
                         adaAlat = true;
                     }
                 });
             }
-            if(adaAlat) pilihAlat.innerHTML = opsiHTML;
+            
+            if (adaAlat) {
+                pilihAlat.innerHTML = opsiHTML;
+            } else {
+                pilihAlat.innerHTML = `<option value="" disabled selected>-- Tidak ada alat di wilayah Anda --</option>`;
+            }
         };
         muatDaftarAlat();
 
@@ -247,7 +290,7 @@
             const profilRef = await get(ref(db, `devices/${idAlat}/profil`));
             if (profilRef.exists()) {
                 const dataProfil = profilRef.val();
-                document.getElementById('namaPerusahaan').value = dataProfil.perusahaan || "";
+                document.getElementById('namaPerusahaan').value = dataProfil.nama || "";
                 document.getElementById('kontakPerusahaan').value = dataProfil.kontak || "";
                 document.getElementById('alamatPerusahaan').value = dataProfil.alamat || "";
                 aturModeProfil('lihat'); 
@@ -259,6 +302,13 @@
             // Histori Perawatan
             onValue(ref(db, `devices/${idAlat}/maintenance`), (snapshot) => {
                 const tabelPerawatan = document.getElementById('tabelPerawatan');
+                const headerAksi = document.getElementById('headerAksi');
+                
+                // Sembunyikan Header "Aksi" jika yang login adalah user
+                if (userRole === "user") {
+                    headerAksi.style.display = "none";
+                }
+
                 if (snapshot.exists()) {
                     let htmlRows = "";
                     const semuaLog = [];
@@ -266,33 +316,46 @@
                     semuaLog.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
 
                     semuaLog.forEach(log => {
+                        // Jangan buat kolom aksi (hapus) jika yang login adalah user
+                        let kolomAksi = "";
+                        if (userRole !== "user") {
+                            kolomAksi = `
+                                <td class="p-4 text-center">
+                                    <button class="btn-hapus-log bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded-md text-[10px] font-bold border border-red-200 transition" data-key="${log.key}">HAPUS</button>
+                                </td>
+                            `;
+                        }
+
                         htmlRows += `
                             <tr class="hover:bg-cyan-50/50 transition border-b border-gray-50">
                                 <td class="p-4 font-bold text-gray-800 whitespace-nowrap">${log.tanggal}</td>
                                 <td class="p-4 text-gray-600">${log.kegiatan}</td>
                                 <td class="p-4 text-gray-600 font-medium">${log.teknisi}</td>
-                                <td class="p-4 text-center">
-                                    <button class="btn-hapus-log bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded-md text-[10px] font-bold border border-red-200 transition" data-key="${log.key}">HAPUS</button>
-                                </td>
+                                ${kolomAksi}
                             </tr>
                         `;
                     });
                     tabelPerawatan.innerHTML = htmlRows;
 
-                    document.querySelectorAll('.btn-hapus-log').forEach(btn => {
-                        btn.addEventListener('click', async (event) => {
-                            if(confirm("Yakin ingin menghapus catatan perawatan ini?")) {
-                                await remove(ref(db, `devices/${idAlat}/maintenance/${event.target.getAttribute('data-key')}`));
-                            }
+                    // Aktifkan klik Hapus hanya untuk non-user
+                    if (userRole !== "user") {
+                        document.querySelectorAll('.btn-hapus-log').forEach(btn => {
+                            btn.addEventListener('click', async (event) => {
+                                if(confirm("Yakin ingin menghapus catatan perawatan ini?")) {
+                                    await remove(ref(db, `devices/${idAlat}/maintenance/${event.target.getAttribute('data-key')}`));
+                                }
+                            });
                         });
-                    });
+                    }
                 } else {
-                    tabelPerawatan.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-400 font-medium">Belum ada catatan perawatan.</td></tr>`;
+                    const colspan = userRole === "user" ? 3 : 4;
+                    tabelPerawatan.innerHTML = `<tr><td colspan="${colspan}" class="p-8 text-center text-gray-400 font-medium">Belum ada catatan perawatan.</td></tr>`;
                 }
             });
         });
 
         document.getElementById('btnSimpanProfil').addEventListener('click', (e) => {
+            if (userRole === "user") { e.preventDefault(); return; } 
             if (e.target.type === "button") {
                 e.preventDefault();
                 aturModeProfil('edit'); 
@@ -301,35 +364,76 @@
 
         document.getElementById('formProfil').addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (userRole === "user") { alert("Akses Ditolak! Anda hanya dapat melihat data."); return; }
+            
             const idAlat = document.getElementById('pilihAlat').value;
             const btn = document.getElementById('btnSimpanProfil');
             btn.innerText = "Menyimpan...";
             try {
                 await set(ref(db, `devices/${idAlat}/profil`), {
-                    perusahaan: document.getElementById('namaPerusahaan').value,
+                    nama: document.getElementById('namaPerusahaan').value,
                     kontak: document.getElementById('kontakPerusahaan').value,
                     alamat: document.getElementById('alamatPerusahaan').value
                 });
                 aturModeProfil('lihat'); 
                 alert("Identitas Perusahaan Berhasil Disimpan!");
-            } catch (error) { alert("Gagal: " + error.message); btn.innerText = "Simpan Profil"; }
+            } catch (error) { 
+                alert("Gagal: " + error.message); 
+                btn.innerText = "Simpan Profil"; 
+            }
         });
 
+        // --- FORM PERAWATAN TERBARU (MENGIRIM NAMA ALIAS KE DRIVE DENGAN METODE GET) ---
         document.getElementById('formPerawatan').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const idAlat = document.getElementById('pilihAlat').value;
+            
+            const dropdownAlat = document.getElementById('pilihAlat');
+            const idAlat = dropdownAlat.value; // Ini 'ipal_01' (Untuk Firebase)
+            const namaAlatAlias = dropdownAlat.options[dropdownAlat.selectedIndex].getAttribute('data-nama'); // Ini 'pusat' (Untuk Drive)
+            
             const btn = document.getElementById('btnSimpanRawat');
-            btn.innerText = "Mencatat...";
+            const tgl = document.getElementById('tglRawat').value;
+            const keg = document.getElementById('deskripsiRawat').value;
+            const tek = document.getElementById('teknisiRawat').value;
+
+            btn.innerText = "Mencatat ke Firebase & Drive...";
+            btn.disabled = true;
+
             try {
+                // 1. Simpan ke Firebase menggunakan ID Asli (ipal_01)
                 await push(ref(db, `devices/${idAlat}/maintenance`), {
-                    tanggal: document.getElementById('tglRawat').value,
-                    kegiatan: document.getElementById('deskripsiRawat').value,
-                    teknisi: document.getElementById('teknisiRawat').value,
+                    tanggal: tgl,
+                    kegiatan: keg,
+                    teknisi: tek,
                     timestamp: Date.now()
                 });
+
+                // 2. Simpan ke Google Drive menggunakan Nama Alias (pusat) dan Metode GET (Anti-Blokir Lokal)
+                const scriptUrl = "https://script.google.com/macros/s/AKfycbyaOGTdPuV88e-MZfFz8LNXfsoUavRbgFsopxLQckJMuI8vcxCDbAeCQWAkv6zxz3Gx/exec"; 
+                
+                const params = new URLSearchParams({
+                    idAlat: namaAlatAlias,
+                    tgl: tgl,
+                    keg: keg,
+                    tek: tek
+                });
+                
+                const fullUrl = `${scriptUrl}?${params.toString()}`;
+
+                // Kirim menggunakan metode GET
+                fetch(fullUrl, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+
                 e.target.reset(); 
-            } catch (error) { alert("Gagal: " + error.message); }
-            finally { btn.innerText = "+ Catat Perawatan"; }
+                alert("Catatan perawatan berhasil disimpan dan diarsipkan ke Google Drive!");
+            } catch (error) { 
+                alert("Gagal: " + error.message); 
+            } finally { 
+                btn.innerText = "+ Catat Perawatan"; 
+                btn.disabled = false;
+            }
         });
 
     </script>
