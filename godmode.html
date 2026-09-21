@@ -48,10 +48,9 @@
         
         <!-- WATERMARK BACKGROUND -->
         <div class="absolute inset-0 pointer-events-none opacity-10" 
-             style="background-image: url('WATER SENS No Background.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
+             style="background-image: url('alamraya.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
         </div>
 
-        <!-- BUNGKUS KONTEN MENU UTAMA -->
         <div class="relative z-10 flex flex-col h-full w-full">
             <div class="p-6 text-center border-b border-white/20">
                 <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
@@ -124,6 +123,72 @@
                 </div>
             </div>
 
+            <!-- 🌟 PANEL BATAS SENSOR GLOBAL (NEW) 🌟 -->
+            <div id="panelBatasSensor" class="hidden bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-cyan-100 border-l-4 border-l-blue-400 max-w-6xl mx-auto transition-all duration-300">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2">⚙️ Konfigurasi Standar Baku Mutu (Global)</h2>
+                <p class="text-sm text-gray-500 mb-6">Aturan peringatan ini akan berlaku untuk SELURUH alat dan lokasi secara otomatis.</p>
+                
+                <form id="formLimitSensor" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- pH -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">💧 Tingkat pH</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Bawah (Min)</label>
+                                    <input type="number" step="0.1" id="limit_ph_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="6.5">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Atas (Max)</label>
+                                    <input type="number" step="0.1" id="limit_ph_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="8.5">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- DO -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">🫧 Dis. Oxygen</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Bahaya (Min)</label>
+                                    <input type="number" step="0.1" id="limit_do_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="4.0">
+                                </div>
+                                <p class="text-[10px] text-gray-400 italic">Nilai DO maksimal tidak dibatasi.</p>
+                            </div>
+                        </div>
+                        <!-- TDS -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">🧂 TDS (PPM)</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Penuh (Max)</label>
+                                    <input type="number" step="1" id="limit_tds_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="1000">
+                                </div>
+                                <p class="text-[10px] text-gray-400 italic">Nilai TDS minimal tidak dibatasi.</p>
+                            </div>
+                        </div>
+                        <!-- Suhu -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">🌡️ Suhu Air (°C)</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Dingin (Min)</label>
+                                    <input type="number" step="0.1" id="limit_suhu_min" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="20.0">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-[10px] font-bold mb-1 uppercase">Batas Panas (Max)</label>
+                                    <input type="number" step="0.1" id="limit_suhu_max" required class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 outline-none text-sm" placeholder="35.0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <button type="submit" id="btnSimpanLimit" class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-3 px-8 rounded-xl transition shadow-md shadow-blue-200 w-full md:w-auto">
+                            💾 Terapkan ke Semua Alat
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <!-- PANEL PEMBUATAN & EDIT AKUN -->
             <div id="panelFormAkun" class="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-cyan-100 border-l-4 border-l-emerald-400 max-w-6xl mx-auto transition-all duration-300">
                 <h2 id="judulFormAkun" class="text-xl md:text-2xl font-bold text-gray-800 mb-6 border-b border-gray-100 pb-4">Registrasi Akun Bawahan</h2>
@@ -179,7 +244,7 @@
                 </div>
             </div>
 
-            <!-- 📝 PANEL RIWAYAT AKTIVITAS (HANYA SUPERADMIN & DEVELOPER) 📝 -->
+            <!-- 📝 PANEL RIWAYAT AKTIVITAS 📝 -->
             <div id="panelRiwayat" class="hidden bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-cyan-100 max-w-6xl mx-auto">
                 <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800">Riwayat Aktivitas Sistem (Log)</h2>
@@ -226,7 +291,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, update, onValue, remove, push, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const userRole = sessionStorage.getItem("userRole");
         const userId = sessionStorage.getItem("userId");
@@ -240,10 +305,12 @@
         const hierarkiAkses = { 'developer': ['superadmin', 'admin', 'user'], 'superadmin': ['admin', 'user'], 'admin': ['user'] };
         const wewenangSaya = hierarkiAkses[userRole]; 
         
-        let modeEditAktif = false; // Penanda apakah sedang mode edit atau bikin baru
+        let modeEditAktif = false; 
 
+        // 🌟 TAMPILKAN PANEL SESUAI ROLE 🌟
         if (userRole === 'developer' || userRole === 'superadmin') {
             document.getElementById('panelAlat').classList.remove('hidden');
+            document.getElementById('panelBatasSensor').classList.remove('hidden'); 
             document.getElementById('panelRiwayat').classList.remove('hidden');
         }
 
@@ -372,7 +439,6 @@
 
         window.bukaModalSandi = (tipe, idTarget, pathFirebase) => {
             targetHapus = { tipe, idTarget, pathFirebase };
-            
             let namaTampilan = idTarget;
             if (tipe === 'log_satuan') namaTampilan = "catatan aktivitas ini";
             
@@ -399,7 +465,6 @@
             const sandiAsliSaya = databaseAkun[userId]?.sandi; 
 
             if (!inputSandi) return alert("⚠️ Kata sandi tidak boleh kosong!");
-            
             if (inputSandi !== sandiAsliSaya && inputSandi !== "SuperAdmin") {
                 return alert("❌ KATA SANDI SALAH! Akses penghapusan ditolak.");
             }
@@ -407,16 +472,11 @@
             try {
                 const btn = document.getElementById('btnLanjutModal');
                 btn.innerText = "Menghapus...";
-                
                 await remove(ref(db, targetHapus.pathFirebase));
                 
-                if (targetHapus.tipe === 'akun') {
-                    await catatAktivitas("Hapus Akun", `Menghapus seluruh akses sistem untuk akun: ${targetHapus.idTarget}`);
-                } else if (targetHapus.tipe === 'alat') {
-                    await catatAktivitas("Hapus Alat", `Mencabut alat/perangkat keras dari jaringan: ${targetHapus.idTarget}`);
-                } else if (targetHapus.tipe === 'log_semua') {
-                    await catatAktivitas("Reset Log", `Seluruh riwayat aktivitas sistem telah dibersihkan.`);
-                }
+                if (targetHapus.tipe === 'akun') await catatAktivitas("Hapus Akun", `Menghapus seluruh akses sistem untuk akun: ${targetHapus.idTarget}`);
+                else if (targetHapus.tipe === 'alat') await catatAktivitas("Hapus Alat", `Mencabut alat dari jaringan: ${targetHapus.idTarget}`);
+                else if (targetHapus.tipe === 'log_semua') await catatAktivitas("Reset Log", `Seluruh riwayat aktivitas sistem telah dibersihkan.`);
 
                 let pesanSukses = "Data";
                 if(targetHapus.tipe === 'akun') pesanSukses = "Akun";
@@ -432,7 +492,6 @@
             window.tutupModalSandi();
         });
 
-        // 🌟 SISTEM RENDER TABEL & LOGIKA EDIT 🌟
         function batalEditAkun() {
             modeEditAktif = false;
             document.getElementById('formBuatAkun').reset();
@@ -454,16 +513,13 @@
             databaseAkun = snapshot.val() || {};
             let opsiAdminAlat = `<option value="" disabled selected>-- Pilih Admin --</option>`;
             const tabelAkun = document.getElementById('tabelAkun');
-            
             let daftarBawahan = {};
 
             for (let id in databaseAkun) {
                 if (id === "godmode") continue;
                 const data = databaseAkun[id];
                 
-                if (data.role === 'admin') {
-                    opsiAdminAlat += `<option value="${id}">${id} - ${data.lokasi || 'Tanpa Lokasi'}</option>`;
-                }
+                if (data.role === 'admin') opsiAdminAlat += `<option value="${id}">${id} - ${data.lokasi || 'Tanpa Lokasi'}</option>`;
 
                 if (wewenangSaya.includes(data.role)) {
                     if (userRole === 'admin' && data.induk !== userId) continue;
@@ -476,11 +532,8 @@
             for (let id in daftarBawahan) {
                 const user = daftarBawahan[id];
                 const induk = user.induk;
-                if (induk && daftarBawahan[induk]) {
-                    daftarBawahan[induk].children.push(user);
-                } else {
-                    akarPohon.push(user);
-                }
+                if (induk && daftarBawahan[induk]) daftarBawahan[induk].children.push(user);
+                else akarPohon.push(user);
             }
 
             let htmlTabel = "";
@@ -515,15 +568,12 @@
             akarPohon.forEach(akar => renderBaris(akar, 0));
             tabelAkun.innerHTML = htmlTabel || `<tr><td colspan="4" class="p-8 text-center text-gray-400">Belum ada akun terdaftar.</td></tr>`;
 
-            // Logic Tombol Hapus Akun
             document.querySelectorAll('.btn-hapus-akun').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const idTarget = e.target.getAttribute('data-id');
-                    window.bukaModalSandi('akun', idTarget, 'users/' + idTarget);
+                    window.bukaModalSandi('akun', e.target.getAttribute('data-id'), 'users/' + e.target.getAttribute('data-id'));
                 });
             });
 
-            // Logic Tombol Edit Akun
             document.querySelectorAll('.btn-edit-akun').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     modeEditAktif = true;
@@ -533,10 +583,8 @@
                     const lokasi = e.target.getAttribute('data-lokasi');
                     const induk = e.target.getAttribute('data-induk');
 
-                    // Kunci ID agar tidak berubah (Karena ID adalah nyawa utama relasi data)
                     const elId = document.getElementById('newId');
-                    elId.value = id;
-                    elId.disabled = true;
+                    elId.value = id; elId.disabled = true;
                     elId.classList.add('bg-gray-200', 'cursor-not-allowed', 'text-gray-400');
 
                     document.getElementById('newPassword').value = sandi;
@@ -544,13 +592,10 @@
                     
                     const elRole = document.getElementById('newRole');
                     elRole.value = role;
-                    elRole.dispatchEvent(new Event('change')); // Pancing form Atasan agar muncul
+                    elRole.dispatchEvent(new Event('change')); 
 
-                    setTimeout(() => {
-                        if(induk) document.getElementById('indukAdmin').value = induk;
-                    }, 100);
+                    setTimeout(() => { if(induk) document.getElementById('indukAdmin').value = induk; }, 100);
 
-                    // Ganti UI Form
                     document.getElementById('judulFormAkun').innerText = `✏️ Edit Data Akun: ${id}`;
                     document.getElementById('btnBatalEditAkun').classList.remove('hidden');
                     
@@ -558,39 +603,94 @@
                     btnBuat.innerText = "💾 Update Akun";
                     btnBuat.className = "flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-md shadow-blue-200";
 
-                    // Scroll layar ke form
                     document.getElementById('panelFormAkun').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
             });
         });
 
+        // 🌟 SISTEM RENDER DAFTAR ALAT 🌟
         if (userRole === 'developer' || userRole === 'superadmin') {
             onValue(ref(db, 'devices'), (snapshot) => {
                 const tabelAlat = document.getElementById('tabelAlat');
                 tabelAlat.innerHTML = "";
+                
                 if (snapshot.exists()) {
                     snapshot.forEach((child) => {
+                        const idAlat = child.key;
+                        const namaAlias = child.val().nama || '-';
+                        
                         tabelAlat.innerHTML += `
-                            <tr class="hover:bg-cyan-50/50 transition">
-                                <td class="p-3 font-bold text-cyan-800">${child.key}</td>
-                                <td class="p-3 font-medium text-gray-700">${child.val().nama || '-'}</td>
+                            <tr class="hover:bg-cyan-50/50 transition border-b border-gray-50">
+                                <td class="p-3 font-bold text-cyan-800">${idAlat}</td>
+                                <td class="p-3 font-medium text-gray-700">${namaAlias}</td>
                                 <td class="p-3"><span class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">${child.val().pemilik || '-'}</span></td>
-                                <td class="p-3 text-center"><button class="btn-hapus-alat text-red-500 hover:text-red-700 font-bold text-xs transition" data-id="${child.key}">Hapus</button></td>
+                                <td class="p-3 text-center"><button class="btn-hapus-alat text-red-500 hover:text-red-700 font-bold text-xs transition" data-id="${idAlat}">Hapus</button></td>
                             </tr>
                         `;
                     });
-                    
+
                     document.querySelectorAll('.btn-hapus-alat').forEach(btn => {
                         btn.addEventListener('click', (e) => {
-                            const idTarget = e.target.getAttribute('data-id');
-                            window.bukaModalSandi('alat', idTarget, 'devices/' + idTarget);
+                            window.bukaModalSandi('alat', e.target.getAttribute('data-id'), 'devices/' + e.target.getAttribute('data-id'));
                         });
                     });
                 }
             });
         }
 
-        // 🌟 SISTEM SUBMIT (Bisa Buat Baru / Update Data Lama)
+        // 🌟 SISTEM KONFIGURASI BATAS SENSOR (GLOBAL) 🌟
+        const formLimitSensor = document.getElementById('formLimitSensor');
+
+        if (userRole === 'developer' || userRole === 'superadmin') {
+            onValue(ref(db, 'global_limits'), (snap) => {
+                if (snap.exists()) {
+                    const lim = snap.val();
+                    document.getElementById('limit_ph_min').value = lim.ph_min || 6.5;
+                    document.getElementById('limit_ph_max').value = lim.ph_max || 8.5;
+                    document.getElementById('limit_do_min').value = lim.do_min || 4.0;
+                    document.getElementById('limit_tds_max').value = lim.tds_max || 1000;
+                    document.getElementById('limit_suhu_min').value = lim.suhu_min || 20.0;
+                    document.getElementById('limit_suhu_max').value = lim.suhu_max || 35.0;
+                } else {
+                    document.getElementById('limit_ph_min').value = 6.5;
+                    document.getElementById('limit_ph_max').value = 8.5;
+                    document.getElementById('limit_do_min').value = 4.0;
+                    document.getElementById('limit_tds_max').value = 1000;
+                    document.getElementById('limit_suhu_min').value = 20.0;
+                    document.getElementById('limit_suhu_max').value = 35.0;
+                }
+            });
+        }
+
+        formLimitSensor.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSimpanLimit');
+            
+            btn.innerText = "Menerapkan...";
+            btn.disabled = true;
+
+            try {
+                await update(ref(db, `global_limits`), {
+                    ph_min: document.getElementById('limit_ph_min').value,
+                    ph_max: document.getElementById('limit_ph_max').value,
+                    do_min: document.getElementById('limit_do_min').value,
+                    tds_max: document.getElementById('limit_tds_max').value,
+                    suhu_min: document.getElementById('limit_suhu_min').value,
+                    suhu_max: document.getElementById('limit_suhu_max').value,
+                    updated_at: new Date().toLocaleString("id-ID")
+                });
+                
+                await catatAktivitas("Set Standar Global", `Mengubah standar baku mutu sensor untuk seluruh alat di sistem.`);
+                alert(`✅ SUKSES! Standar baku mutu berhasil diubah. Dashboard seluruh alat akan langsung menyesuaikan.`);
+            } catch (error) { 
+                alert("Gagal menyimpan data: " + error.message); 
+            } finally {
+                btn.innerText = "💾 Terapkan ke Semua Alat";
+                btn.disabled = false;
+            }
+        });
+
+        // 🌟 SISTEM SUBMIT AKUN & ALAT 🌟
         document.getElementById('formBuatAkun').addEventListener('submit', async (e) => {
             e.preventDefault();
             const newId = document.getElementById('newId').value.trim();
@@ -611,30 +711,21 @@
             btn.innerText = "Memproses..."; btn.disabled = true;
             try {
                 if (modeEditAktif) {
-                    // JIKA MODE EDIT
                     await update(ref(db, 'users/' + newId), { 
-                        role: newRole, 
-                        sandi: newPassword, 
-                        induk: induk,
-                        lokasi: newLokasi 
+                        role: newRole, sandi: newPassword, induk: induk, lokasi: newLokasi 
                     });
                     await catatAktivitas("Edit Akun", `Memperbarui data profil/jabatan akun: ${newId}`);
                     alert(`✅ Data akun ${newId} berhasil di-update!`);
                 } else {
-                    // JIKA BIKIN AKUN BARU
                     await createUserWithEmailAndPassword(secondaryAuth, newId + "@sistem.alamraya.com", newPassword);
                     await set(ref(db, 'users/' + newId), { 
-                        role: newRole, 
-                        sandi: newPassword, 
-                        induk: induk,
-                        lokasi: newLokasi 
+                        role: newRole, sandi: newPassword, induk: induk, lokasi: newLokasi 
                     });
                     await catatAktivitas("Tambah Akun", `Membuat akun baru (${newRole}) dengan ID: ${newId} di area ${newLokasi}`);
                     await signOut(secondaryAuth);
                     alert(`✅ Akun ${newId} berhasil dibuat!`);
                 }
-                
-                batalEditAkun(); // Kembalikan form ke mode awal
+                batalEditAkun(); 
             } catch (error) { 
                 alert("GAGAL: " + error.message); 
                 btn.innerText = modeEditAktif ? "💾 Update Akun" : "Tambahkan Akun"; 
@@ -654,9 +745,7 @@
                     nama: document.getElementById('namaAlat').value, 
                     pemilik: pemilikAlat 
                 });
-
                 await catatAktivitas("Tambah Alat", `Meregistrasi perangkat keras ID: ${idAlat} dan menugaskannya ke Admin: ${pemilikAlat}`);
-
                 e.target.reset();
             } catch (error) { alert("GAGAL: " + error.message); }
             finally { document.getElementById('btnBuatAlat').innerText = "+ Daftarkan Alat"; }

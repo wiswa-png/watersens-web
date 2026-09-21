@@ -21,7 +21,9 @@
     <!-- IDENTITAS APLIKASI PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#06b6d4">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254068.png">
+    <!-- IKON ATAS SUDAH DIGANTI -->
+    <link rel="apple-touch-icon" href="alamraya.png">
+    <link rel="icon" type="image/png" href="alamraya.png">
 </head>
 <body class="flex h-screen overflow-hidden">
 
@@ -31,11 +33,14 @@
     <aside id="sidebar" class="absolute z-50 md:relative w-64 h-full sidebar-glass text-white shadow-2xl transition-transform duration-300 -translate-x-full md:translate-x-0 overflow-hidden">
         
         <div class="absolute inset-0 pointer-events-none opacity-10" 
-             style="background-image: url('WATER SENS No Background.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
+             style="background-image: url('alamraya.png'); background-size: 140%; background-position: center; background-repeat: no-repeat; transform: rotate(-15deg) scale(1.1); filter: brightness(200%);">
         </div>
 
         <div class="relative z-10 flex flex-col h-full w-full">
             <div class="p-6 text-center border-b border-white/20">
+                <!-- LOGO UTAMA SUDAH DITAMBAHKAN DI SINI -->
+                <img src="alamraya.png" alt="Logo Watersens" class="w-16 h-16 mx-auto mb-2 object-contain drop-shadow-md">
+                
                 <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
                 <p class="text-xs font-light mt-1 opacity-90">SMART WATER MONITORING</p>
             </div>
@@ -88,7 +93,6 @@
                 </div>
             </div>
 
-            <!-- AREA SENSOR (Tanpa Efek Blur) -->
             <div id="areaSensor" class="relative transition-opacity duration-300">
                 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -129,10 +133,7 @@
                     </div>
                 </div>
 
-                <!-- AREA GRAFIK (Dilengkapi Loading Tersendiri) -->
                 <div class="mt-6 md:mt-8 bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 relative">
-                    
-                    <!-- OVERLAY LOADING HANYA UNTUK GRAFIK -->
                     <div id="loadingGrafik" class="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm hidden items-center justify-center rounded-2xl">
                         <div class="bg-cyan-50 px-5 py-2.5 rounded-full shadow-sm font-bold text-cyan-700 flex items-center gap-3 border border-cyan-100">
                             <svg class="animate-spin h-5 w-5 text-cyan-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -173,7 +174,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get, onValue, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const API_URL = "https://script.google.com/macros/s/AKfycbwwTpboDUZDDuQI3IZMiF1NV_gYR-gQe4U-JZsuttSMvlDMBKGlz0FLmnRvpz3Vy8Xr/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyaOGTdPuV88e-MZfFz8LNXfsoUavRbgFsopxLQckJMuI8vcxCDbAeCQWAkv6zxz3Gx/exec"; 
 
         const userRole = sessionStorage.getItem("userRole");
         const userId = sessionStorage.getItem("userId");
@@ -182,11 +183,9 @@
         document.getElementById('displayId').innerText = userId;
         document.getElementById('displayRole').innerText = userRole;
 
-        // Buka wadah menu agar tombol Pabrik muncul (untuk admin & user)
         const adminMenu = document.getElementById('adminMenu');
         if (adminMenu) adminMenu.classList.remove('hidden');
 
-        // Jika yang login adalah 'user', sembunyikan HANYA tombol Godmode (Sistem)
         if (userRole === "user") {
             const linkGodmode = document.querySelector('a[href="godmode.html"]');
             if (linkGodmode) linkGodmode.style.display = "none";
@@ -209,6 +208,7 @@
         const db = getDatabase(app);
 
         let activeSensorRef = null;
+        let activeLimitsRef = null; 
         let timerOffline = null; 
         let lastLoggedTime = ""; 
 
@@ -288,6 +288,7 @@
             
             // Bersihkan data lama
             if (activeSensorRef) off(activeSensorRef);
+            if (activeLimitsRef) off(activeLimitsRef); 
             if (timerOffline) clearTimeout(timerOffline); 
 
             liveChart.data.labels = [];
@@ -300,14 +301,32 @@
             document.getElementById('valTds').innerText = "0";
             document.getElementById('valSuhu').innerText = "0.0";
 
-            // Munculkan loading KHUSUS di area grafik
             loadingGrafik.classList.remove('hidden');
             loadingGrafik.classList.add('flex');
             
             statusKoneksi.innerHTML = `🟡 Status: Mengaktifkan Koneksi ke <b>${idAlat}</b>...`;
             statusKoneksi.className = "text-xs text-yellow-500 font-semibold mt-1";
 
-            // 1. KONEKSI KE FIREBASE (REAL-TIME)
+            // 0. AMBIL BATAS SENSOR (STANDAR GLOBAL FIREBASE)
+            let limitPhMin = 6.5, limitPhMax = 8.5;
+            let limitDoMin = 4.0;
+            let limitTdsMax = 1000;
+            let limitSuhuMin = 20, limitSuhuMax = 35;
+
+            activeLimitsRef = ref(db, `global_limits`);
+            onValue(activeLimitsRef, (snap) => {
+                if(snap.exists()) {
+                    const lim = snap.val();
+                    if(lim.ph_min !== undefined && lim.ph_min !== "") limitPhMin = parseFloat(lim.ph_min);
+                    if(lim.ph_max !== undefined && lim.ph_max !== "") limitPhMax = parseFloat(lim.ph_max);
+                    if(lim.do_min !== undefined && lim.do_min !== "") limitDoMin = parseFloat(lim.do_min);
+                    if(lim.tds_max !== undefined && lim.tds_max !== "") limitTdsMax = parseFloat(lim.tds_max);
+                    if(lim.suhu_min !== undefined && lim.suhu_min !== "") limitSuhuMin = parseFloat(lim.suhu_min);
+                    if(lim.suhu_max !== undefined && lim.suhu_max !== "") limitSuhuMax = parseFloat(lim.suhu_max);
+                }
+            });
+
+            // 1. KONEKSI KE FIREBASE (REAL-TIME SENSOR)
             activeSensorRef = ref(db, `devices/${idAlat}/sensors`);
             onValue(activeSensorRef, (snapshot) => {
                 statusKoneksi.innerHTML = `🟢 Status: Terhubung Real-Time ke <b>${idAlat}</b>`;
@@ -345,46 +364,46 @@
                         lastLoggedTime = timeLabel;
                     }
 
-                    // Papan Analisis AI
+                    // Papan Analisis AI (Menggunakan Limit Global)
                     const papan = document.getElementById('papanPeringatan');
                     let pesanPeringatan = [];
 
                     const badgePh = document.getElementById('badgePh');
-                    if (ph < 6.5 || ph > 8.5) {
+                    if (ph < limitPhMin || ph > limitPhMax) {
                         badgePh.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-600 animate-pulse w-fit";
                         badgePh.innerText = "ABNORMAL";
-                        if(ph > 0) pesanPeringatan.push("🚨 Tingkat pH air di luar batas aman (Standar Normal: 6.5 - 8.5)!");
+                        if(ph > 0) pesanPeringatan.push(`🚨 Tingkat pH air di luar batas aman (Batas: ${limitPhMin} - ${limitPhMax})!`);
                     } else {
                         badgePh.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 w-fit";
                         badgePh.innerText = "NORMAL";
                     }
 
                     const badgeDo = document.getElementById('badgeDo');
-                    if (doVal < 4.0 && doVal > 0) {
+                    if (doVal < limitDoMin && doVal > 0) {
                         badgeDo.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-600 animate-pulse w-fit";
                         badgeDo.innerText = "RENDAH";
-                        pesanPeringatan.push("⚠️ Kadar Oksigen Terlarut (DO) rendah! Mikroba penjernih berisiko mati.");
+                        pesanPeringatan.push(`⚠️ Kadar Oksigen Terlarut (DO) rendah! (Batas minimal: ${limitDoMin} mg/L).`);
                     } else {
                         badgeDo.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-cyan-100 text-cyan-700 w-fit";
                         badgeDo.innerText = "BAGUS";
                     }
 
                     const badgeTds = document.getElementById('badgeTds');
-                    if (tds > 1000) {
+                    if (tds > limitTdsMax) {
                         badgeTds.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-600 animate-pulse w-fit";
                         badgeTds.innerText = "TINGGI";
-                        pesanPeringatan.push("🚨 Kadar padatan terlarut (TDS) terlalu padat melebihi 1000 PPM.");
+                        pesanPeringatan.push(`🚨 Kadar TDS terlalu padat melebihi batas maksimal (${limitTdsMax} PPM).`);
                     } else {
                         badgeTds.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-600 w-fit";
                         badgeTds.innerText = "PPM";
                     }
 
                     const badgeSuhu = document.getElementById('badgeSuhu');
-                    if (suhu > 35) {
+                    if (suhu > limitSuhuMax) {
                         badgeSuhu.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-600 animate-pulse w-fit";
                         badgeSuhu.innerText = "PANAS";
-                        pesanPeringatan.push("⚠️ Suhu air terlalu panas (> 35°C), pendinginan diperlukan.");
-                    } else if (suhu < 20 && suhu > 0) {
+                        pesanPeringatan.push(`⚠️ Suhu air terlalu panas (> ${limitSuhuMax}°C), pendinginan diperlukan.`);
+                    } else if (suhu < limitSuhuMin && suhu > 0) {
                         badgeSuhu.className = "text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-600 animate-pulse w-fit";
                         badgeSuhu.innerText = "DINGIN";
                     } else {
@@ -400,7 +419,7 @@
                         papan.innerHTML = "Menunggu angka dari sensor masuk...";
                     } else {
                         papan.className = "p-4 rounded-xl bg-emerald-50 text-sm text-emerald-700 font-semibold border border-emerald-200";
-                        papan.innerHTML = "✅ Kualitas air sangat prima. Semua parameter stabil dan siap dialirkan.";
+                        papan.innerHTML = "✅ Kualitas air sangat prima. Semua parameter terpantau dalam batas aman.";
                     }
                 }
 
