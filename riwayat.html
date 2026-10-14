@@ -307,10 +307,12 @@
                     const tglAsli = kolom[0].trim();
                     const tglBaku = formatTanggalBaku(tglAsli); 
                     const waktuStr = kolom[1].trim(); 
+                    const suhu = parseFloat(kolom[2]);
                     const ph = parseFloat(kolom[2]);
-                    const doVal = parseFloat(kolom[3]);
                     const tds = parseFloat(kolom[4]);
-                    const suhu = parseFloat(kolom[5]);
+                    const doVal = parseFloat(kolom[5]);
+                    
+                    
 
                     // Double Filter Tanggal
                     if (tglBaku < tglMulai) return;
@@ -334,9 +336,8 @@
                     dataExport.push([tglAsli, waktuStr, ph, doVal, tds, suhu, status]);
 
                     htmlRows += `
-                        <tr class="hover:bg-cyan-50/50 transition border-b border-gray-50">
-                            <td class="p-4 font-medium text-gray-800 whitespace-nowrap">${tglAsli}</td>
-                            <td class="p-4 font-bold text-cyan-600 whitespace-nowrap">${waktuStr}</td>
+                        <tr class="hover:bg-gray-50 transition border-b">
+                            <td class="p-4 font-medium text-gray-800 whitespace-nowrap">${tglStr} <span class="text-sky-400 mx-1">|</span> ${waktuStr}</td>
                             <td class="p-4 text-gray-600 font-bold">${ph.toFixed(1)}</td>
                             <td class="p-4 text-gray-600 font-bold">${doVal.toFixed(1)}</td>
                             <td class="p-4 text-gray-600 font-bold">${tds.toFixed(0)}</td>
