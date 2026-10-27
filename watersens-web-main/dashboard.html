@@ -21,19 +21,21 @@
     <!-- IDENTITAS APLIKASI PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#06b6d4">
-    <!-- IKON ATAS SUDAH DIGANTI -->
     <link rel="apple-touch-icon" href="tanpateksputih.png">
     <link rel="icon" type="image/png" href="tanpateksputih.png">
 
-    <!-- INTEGRASI ONESIGNAL PUSH NOTIFICATION (DIPERBAIKI JALURNYA) -->
+    <!-- INTEGRASI ONESIGNAL PUSH NOTIFICATION (DIKOREKSI JALUR & PARAMETERNYA) -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
-          serviceWorkerPath: "watersens-web/OneSignalSDKWorker.js"
+          serviceWorkerPath: "OneSignalSDKWorker.js",
+          serviceWorkerParam: { scope: "/watersens-web/" }
         });
+        
+        // Memunculkan tombol/prompt izin langganan otomatis ke browser
         OneSignal.Slidedown.promptPush();
       });
     </script>
@@ -51,7 +53,6 @@
 
         <div class="relative z-10 flex flex-col h-full w-full">
             <div class="p-6 text-center border-b border-white/20">
-                <!-- LOGO UTAMA SUDAH DITAMBAHKAN DI SINI -->
                 <img src="tanpateksputih.png" alt="Logo Watersens" class="w-16 h-16 mx-auto mb-2 object-contain drop-shadow-md">
                 
                 <h2 class="text-2xl font-bold tracking-wider">WATERSENS</h2>
@@ -488,21 +489,6 @@
                     loadingGrafik.classList.add('hidden');
                 });
         });
-    </script>
-    
-  <!-- PENGGANTI SERVICE WORKER AGAR MENDUKUNG ONESIGNAL PUSH NOTIFICATION -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/watersens-web/OneSignalSDKWorker.js')
-                    .then(registration => {
-                        console.log('✅ OneSignal Service Worker Berhasil Didaftarkan!', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('❌ OneSignal Service Worker Gagal Didaftarkan:', error);
-                    });
-            });
-        }
     </script>
 
 </body>
