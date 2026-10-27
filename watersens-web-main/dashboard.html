@@ -490,11 +490,11 @@
         });
     </script>
     
-    <!-- PENGGANTI SERVICE WORKER AGAR MENDUKUNG ONESIGNAL PUSH NOTIFICATION -->
+  <!-- PENGGANTI SERVICE WORKER AGAR MENDUKUNG ONESIGNAL PUSH NOTIFICATION -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./OneSignalSDKWorker.js')
+                navigator.serviceWorker.register('/watersens-web/OneSignalSDKWorker.js')
                     .then(registration => {
                         console.log('✅ OneSignal Service Worker Berhasil Didaftarkan!', registration.scope);
                     })
