@@ -24,6 +24,19 @@
     <!-- IKON ATAS SUDAH DIGANTI -->
     <link rel="apple-touch-icon" href="tanpateksputih.png">
     <link rel="icon" type="image/png" href="tanpateksputih.png">
+
+    <!-- INTEGRASI ONESIGNAL PUSH NOTIFICATION -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
+        });
+        // Memaksa pop-up izin notifikasi muncul
+        OneSignal.Slidedown.promptPush();
+      });
+    </script>
 </head>
 <body class="flex h-screen overflow-hidden">
 
