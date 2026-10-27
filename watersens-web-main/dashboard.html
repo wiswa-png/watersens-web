@@ -24,6 +24,18 @@
     <!-- IKON ATAS SUDAH DIGANTI -->
     <link rel="apple-touch-icon" href="tanpateksputih.png">
     <link rel="icon" type="image/png" href="tanpateksputih.png">
+
+    <!-- INTEGRASI ONESIGNAL PUSH NOTIFICATION -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "c494bc09-bc09-4059-9023-d8da28d3364c"
+        });
+        OneSignal.Slidedown.promptPush();
+      });
+    </script>
 </head>
 <body class="flex h-screen overflow-hidden">
 
@@ -286,7 +298,6 @@
         pilihAlat.addEventListener('change', (e) => {
             const idAlat = e.target.value; 
             
-            // Bersihkan data lama
             if (activeSensorRef) off(activeSensorRef);
             if (activeLimitsRef) off(activeLimitsRef); 
             if (timerOffline) clearTimeout(timerOffline); 
@@ -307,7 +318,6 @@
             statusKoneksi.innerHTML = `🟡 Status: Mengaktifkan Koneksi ke <b>${idAlat}</b>...`;
             statusKoneksi.className = "text-xs text-yellow-500 font-semibold mt-1";
 
-            // 0. AMBIL BATAS SENSOR (STANDAR GLOBAL FIREBASE)
             let limitPhMin = 6.5, limitPhMax = 8.5;
             let limitDoMin = 4.0;
             let limitTdsMax = 1000;
@@ -326,7 +336,6 @@
                 }
             });
 
-            // 1. KONEKSI KE FIREBASE (REAL-TIME SENSOR)
             activeSensorRef = ref(db, `devices/${idAlat}/sensors`);
             onValue(activeSensorRef, (snapshot) => {
                 statusKoneksi.innerHTML = `🟢 Status: Terhubung Real-Time ke <b>${idAlat}</b>`;
@@ -364,7 +373,6 @@
                         lastLoggedTime = timeLabel;
                     }
 
-                    // Papan Analisis AI (Menggunakan Limit Global)
                     const papan = document.getElementById('papanPeringatan');
                     let pesanPeringatan = [];
 
@@ -432,7 +440,6 @@
                 }, 30000); 
             });
 
-            // 2. KONEKSI KE GOOGLE DRIVE (HISTORI)
             const today = new Date();
             const tanggal = today.getDate();
             const bulan = today.getMonth() + 1;
@@ -482,16 +489,16 @@
         });
     </script>
     
-    <!-- INI DIA MESIN PWA-NYA BOS! (WAJIB ADA DI SEMUA HALAMAN TERUTAMA INDEX.HTML) -->
+    <!-- PENGGANTI SERVICE WORKER AGAR MENDUKUNG ONESIGNAL PUSH NOTIFICATION -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
+                navigator.serviceWorker.register('./OneSignalSDKWorker.js')
                     .then(registration => {
-                        console.log('✅ Service Worker PWA Berhasil Didaftarkan!', registration.scope);
+                        console.log('✅ OneSignal Service Worker Berhasil Didaftarkan!', registration.scope);
                     })
                     .catch(error => {
-                        console.error('❌ Service Worker PWA Gagal Didaftarkan:', error);
+                        console.error('❌ OneSignal Service Worker Gagal Didaftarkan:', error);
                     });
             });
         }
