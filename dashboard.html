@@ -487,18 +487,19 @@
     </script>
     
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(registration => {
-                        console.log('✅ Service Worker PWA Berhasil Didaftarkan!', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('❌ Service Worker PWA Gagal Didaftarkan:', error);
-                    });
-            });
-        }
-    </script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            // Mendaftarkan OneSignal SDK Worker agar notifikasi web aktif
+            navigator.serviceWorker.register('./OneSignalSDKWorker.js')
+                .then(registration => {
+                    console.log('✅ OneSignal Service Worker Berhasil Didaftarkan!', registration.scope);
+                })
+                .catch(error => {
+                    console.error('❌ OneSignal Service Worker Gagal Didaftarkan:', error);
+                });
+        });
+    }
+</script>
 
 </body>
 </html>
