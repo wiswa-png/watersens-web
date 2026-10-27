@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watersens - Smart IPAL</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { primary: '#06b6d4', primaryDark: '#0891b2', emeraldTheme: '#10b981' }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { 
+            background: radial-gradient(circle at top left, #ecfeff 0%, #cffafe 50%, #d1fae5 100%);
+            min-height: 100vh; 
+        }
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.15);
+        }
+        .input-field { transition: all 0.3s ease; }
+        .input-field:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.2);
+        }
+    </style>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#06b6d4">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254068.png">
+
+    <!-- ONE SIGNAL SDK SCRIPT -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
+        });
+      });
+    </script>
+</head>
+<body class="flex items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Bola cahaya di latar belakang -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-cyan-300 opacity-30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-emerald-300 opacity-20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+
+    <div class="glass-panel w-full max-w-md rounded-3xl overflow-hidden relative z-10 p-10">
+        
+        <!-- 🌟 PERUBAHAN: Logo SVG dihapus, diganti dengan Logo Asli Perusahaan -->
+        <div class="text-center mb-8 flex flex-col items-center justify-center">
+            <img src="alamraya.png" alt="Logo Watersens" class="w-36 h-auto drop-shadow-md hover:scale-105 transition-transform duration-300">
+            <!-- Teks dihapus/disembunyikan karena di dalam logo PNG sudah terdapat teks "WATERSENS" -->
+        </div>
+
+        <form id="loginForm">
+            <div class="mb-5">
+                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-wide" for="idPengguna">ID Pengguna</label>
+                <input type="text" id="idPengguna" class="input-field w-full px-4 py-3 rounded-xl bg-white/90 border border-gray-200 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 focus:outline-none text-gray-700 font-medium" placeholder="Contoh: admin123" required>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-wide" for="password">Kata Sandi</label>
+                <div class="relative flex items-center">
+                    <input type="password" id="password" class="input-field w-full px-4 py-3 pr-12 rounded-xl bg-white/90 border border-gray-200 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 focus:outline-none text-gray-700 font-medium tracking-widest" placeholder="••••••••" required>
+                    <span id="ikonWadah" class="absolute right-4 cursor-pointer text-gray-400 hover:text-primary transition-colors" onclick="toggleSandi()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl transition duration-300 shadow-[0_8px_20px_rgba(6,182,212,0.3)] hover:shadow-[0_8px_25px_rgba(16,185,129,0.4)] transform hover:-translate-y-1">
+                Masuk Sistem
+            </button>
+        </form>
+    </div>
+
+    <div class="fixed bottom-2 right-3 text-[9px] font-mono text-gray-500 opacity-40 pointer-events-none select-none z-0">
+        sys.auth.build_cv.alam_raya.2026
+    </div>
+
+    <script>
+        function toggleSandi() {
+            const inputSandi = document.getElementById("password");
+            const ikonWadah = document.getElementById("ikonWadah");
+
+            if (inputSandi.type === "password") {
+                inputSandi.type = "text";
+                ikonWadah.classList.remove("text-gray-400");
+                ikonWadah.classList.add("text-primary"); 
+            } else {
+                inputSandi.type = "password";
+                ikonWadah.classList.remove("text-primary");
+                ikonWadah.classList.add("text-gray-400"); 
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrRBcpC9y1z4uGlWx7cqha463oN4Ufmh4",
+            authDomain: "watersens-v1.firebaseapp.com",
+            databaseURL: "https://watersens-v1-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "watersens-v1",
+            storageBucket: "watersens-v1.firebasestorage.app",
+            messagingSenderId: "252858653025",
+            appId: "1:252858653025:web:0bc7b113d2c19041a88d20"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app); 
+
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const rawId = document.getElementById('idPengguna').value.trim();
+            const emailFormat = rawId + "@sistem.alamraya.com"; 
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('submitBtn');
+
+            btn.innerText = "Memeriksa Otoritas...";
+            btn.disabled = true;
+
+            try {
+                await signInWithEmailAndPassword(auth, emailFormat, password);
+                
+                const userRef = ref(db, 'users/' + rawId);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists()) {
+                    const dataPengguna = snapshot.val();
+                    
+                    sessionStorage.setItem("userRole", dataPengguna.role);
+                    sessionStorage.setItem("userId", rawId);
+                    window.location.href = "dashboard.html"; 
+                } else {
+                    alert("Akun valid, tapi jabatan belum terdaftar di sistem Database!");
+                    btn.innerText = "Masuk Sistem";
+                    btn.disabled = false;
+                }
+
+            } catch (error) {
+                alert("Akses Ditolak: ID atau Sandi salah!");
+                btn.innerText = "Masuk Sistem";
+                btn.disabled = false;
+            }
+        });
+    </script>
+
+    <!-- SCRIPT SERVICE WORKER UNTUK PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js');
+            });
+        }
+    </script>
+</body>
+</html>
