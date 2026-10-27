@@ -26,14 +26,15 @@
     <!-- INTEGRASI ONESIGNAL PUSH NOTIFICATION (PROMPT IZIN SAJA) -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
-        });
-        OneSignal.Slidedown.promptPush();
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
+        serviceWorkerPath: "watersens-web/OneSignalSDKWorker.js"
       });
-    </script>
+      OneSignal.Slidedown.promptPush();
+    });
+  </script>
 </head>
 <body class="flex h-screen overflow-hidden">
 
