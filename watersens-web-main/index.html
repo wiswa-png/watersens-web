@@ -42,8 +42,7 @@
     <meta name="theme-color" content="#06b6d4">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254068.png">
 
-   <!-- ONESIGNAL WEB PUSH -->
-<script
+  <script
     src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
     defer
 ></script>
@@ -55,7 +54,7 @@
         await OneSignal.init({
             appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
 
-            serviceWorkerPath: "/watersens-web/OneSignalSDKWorker.js",
+            serviceWorkerPath: "/watersens-web/service-worker.js",
             serviceWorkerParam: {
                 scope: "/watersens-web/"
             }
