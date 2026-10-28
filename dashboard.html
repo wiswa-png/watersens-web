@@ -24,21 +24,25 @@
     <link rel="icon" type="image/png" href="tanpateksputih.png">
 
     <!-- INTEGRASI ONESIGNAL PUSH NOTIFICATION (AUTO SLIDEDOWN PROMPT) -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  window.OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
-      safari_web_id: "web.onesignal.auto.6a13c381-7602-4e1d-b2a0-1098f769d9cc",
-      notifyButton: {
-        enable: true,
-      },
-    });
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
+                safari_web_id: "web.onesignal.auto.6a13c381-7602-4e1d-b2a0-1098f769d9cc",
+                serviceWorkerPath: "/watersens-web/OneSignalSDKWorker.js",
+                serviceWorkerParam: {
+                    scope: "/watersens-web/"
+                },
+                notifyButton: {
+                    enable: true,
+                },
+            });
 
-    OneSignal.Slidedown.promptPush();
-  });
-</script>
+            OneSignal.Slidedown.promptPush();
+        });
+    </script>
 </head>
 <body class="flex h-screen overflow-hidden">
 
@@ -494,8 +498,8 @@
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Mendaftarkan OneSignal SDK Worker agar notifikasi web aktif
-            navigator.serviceWorker.register('./OneSignalSDKWorker.js')
+            // Mendaftarkan OneSignal SDK Worker dengan path dan scope yang benar
+            navigator.serviceWorker.register('/watersens-web/OneSignalSDKWorker.js', { scope: '/watersens-web/' })
                 .then(registration => {
                     console.log('✅ OneSignal Service Worker Berhasil Didaftarkan!', registration.scope);
                 })
@@ -504,7 +508,7 @@
                 });
         });
     }
-</script>
+    </script>
 
 </body>
 </html>
