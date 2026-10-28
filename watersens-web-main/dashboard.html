@@ -24,25 +24,30 @@
     <link rel="apple-touch-icon" href="tanpateksputih.png">
     <link rel="icon" type="image/png" href="tanpateksputih.png">
 
-    <!-- INTEGRASI ONESIGNAL RESMI (SESUAI INSTRUKSI) -->
+  <!-- INTEGRASI ONESIGNAL -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
+      window.OneSignalDeferred.push(async function (OneSignal) {
         await OneSignal.init({
           appId: "c494bc09-bc09-4059-9023-d8da28d3364c",
+          safari_web_id: "web.onesignal.auto.6a13c381-7602-4e1d-b2a0-1098f769d9cc",
           serviceWorkerPath: "watersens-web/OneSignalSDKWorker.js",
-          serviceWorkerParam: { scope: "/watersens-web/" },
+          serviceWorkerParam: {
+            scope: "/watersens-web/"
+          },
           notifyButton: {
             enable: true,
             showCredit: false,
             text: {
-                'tip.state.unsubscribed': 'Klik untuk menerima notifikasi IPAL',
-                'tip.state.subscribed': 'Anda sudah berlangganan notifikasi',
-                'tip.state.blocked': 'Anda telah memblokir notifikasi'
+              "tip.state.unsubscribed": "Klik untuk menerima notifikasi IPAL",
+              "tip.state.subscribed": "Anda sudah berlangganan notifikasi",
+              "tip.state.blocked": "Anda telah memblokir notifikasi"
             }
           }
         });
+      });
+    </script>
         
         if (typeof OneSignal.Notifications.requestPermission === 'function') {
             OneSignal.Notifications.requestPermission();
