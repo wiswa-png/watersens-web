@@ -66,6 +66,13 @@
             <nav class="flex-1 p-4 space-y-2 mt-4">
                 <a href="dashboard.html" class="block px-4 py-3 bg-white/25 rounded-lg font-bold shadow-sm text-yellow-300">📊 Ringkasan Sistem</a>
                 <a href="riwayat.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">💧 Riwayat Data IPAL</a>
+                
+                <!-- --- TOMBOL NOTIFIKASI DITAMBAHKAN DI SINI --- -->
+                <button id="btnNotif" onclick="subscribeOneSignal()" class="w-full text-left px-4 py-3 bg-blue-500/80 hover:bg-blue-600 rounded-lg transition mt-2 text-white shadow-md font-semibold text-sm cursor-pointer">
+                    🔔 Aktifkan Notifikasi
+                </button>
+                <!-- -------------------------------------------- -->
+
                 <div id="adminMenu" class="hidden">
                     <a href="pabrik.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition mt-2">🏢 Manajemen Pabrik</a>
                     <a href="godmode.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
@@ -498,7 +505,6 @@
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Mendaftarkan OneSignal SDK Worker dengan path dan scope yang benar
             navigator.serviceWorker.register('/watersens-web/OneSignalSDKWorker.js', { scope: '/watersens-web/' })
                 .then(registration => {
                     console.log('✅ OneSignal Service Worker Berhasil Didaftarkan!', registration.scope);
@@ -509,6 +515,116 @@
         });
     }
     </script>
+
+    <!-- --- MODAL PANDUAN OTOMATIS BERDASARKAN HP PENGGUNA --- -->
+    <div id="modalNotif" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <div class="text-center mb-4">
+                <div class="w-16 h-16 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl shadow-inner">📱</div>
+                <h3 class="text-lg font-bold text-gray-800">Butuh Langkah Tambahan</h3>
+                <p class="text-sm text-gray-500 mt-2">Browser yang Anda gunakan saat ini memblokir sistem notifikasi. Ikuti langkah singkat ini:</p>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl text-xs text-blue-800 space-y-3 font-medium text-left">
+                <!-- Panduan khusus Android (Hanya muncul di HP Android) -->
+                <div id="panduanAndroid" class="hidden">
+                    <p><b>🤖 Pengguna Android:</b><br>Buka link web ini menggunakan browser utama <b>Google Chrome</b> (atau klik titik tiga di kanan atas lalu pilih Buka di Chrome).</p>
+                </div>
+                
+                <!-- Panduan khusus iPhone/iOS (Hanya muncul di iPhone) -->
+                <div id="panduanIphone" class="hidden">
+                    <p><b>🍎 Pengguna iPhone (iOS):</b><br>Buka di Safari, ketuk ikon <b>Bagikan (Share)</b> di bawah, lalu pilih <b>'Tambahkan ke Layar Utama' (Add to Home Screen)</b>.</p>
+                </div>
+            </div>
+            
+            <button onclick="document.getElementById('modalNotif').classList.add('hidden')" class="w-full mt-5 bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl transition shadow-md">
+                Baik, Saya Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- --- SCRIPT KHUSUS TOMBOL & DETEKSI HP OTOMATIS --- -->
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        
+        // Mengecek status notifikasi otomatis saat dashboard baru dibuka
+        window.OneSignalDeferred.push(async function(OneSignal) {
+            try {
+                if (OneSignal.User && OneSignal.User.PushSubscription) {
+                    const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
+                    if (isPushEnabled) {
+                        ubahTombolJadiAktif();
+                    }
+                }
+            } catch (err) {
+                console.log("Cek status OneSignal:", err);
+            }
+        });
+
+        // Fungsi yang berjalan ketika pengguna mengklik tombol "Aktifkan Notifikasi"
+        function subscribeOneSignal() {
+            const isPushSupported = ('serviceWorker' in navigator) && ('PushManager' in window);
+            
+            if (!isPushSupported) {
+                // Deteksi otomatis apakah perangkat yang membuka adalah iPhone atau Android
+                const ua = navigator.userAgent || navigator.vendor || window.opera;
+                const isIos = /ipad|iphone|ipod/.test(ua.toLowerCase());
+
+                // Tampilkan teks panduan yang sesuai saja secara otomatis
+                const pAndroid = document.getElementById('panduanAndroid');
+                const pIphone = document.getElementById('panduanIphone');
+
+                if (isIos) {
+                    if (pIphone) pIphone.classList.remove('hidden');
+                    if (pAndroid) pAndroid.classList.add('hidden');
+                } else {
+                    if (pAndroid) pAndroid.classList.remove('hidden');
+                    if (pIphone) pIphone.classList.add('hidden');
+                }
+
+                // Munculkan Modal
+                const modal = document.getElementById('modalNotif');
+                if(modal) modal.classList.remove('hidden');
+                
+                // Tutup sidebar menu agar modal terlihat jelas di layar HP
+                const sidebar = document.getElementById('sidebar');
+                const overlayMenu = document.getElementById('overlayMenu');
+                if(sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    overlayMenu.classList.add('hidden');
+                }
+                return;
+            }
+
+            // Jika browser mendukung (Chrome/Safari), jalankan OneSignal
+            window.OneSignalDeferred.push(async function(OneSignal) {
+                try {
+                    await OneSignal.Slidedown.promptPush();
+                    
+                    // Mengecek ulang 3 detik setelah diklik
+                    setTimeout(async function() {
+                        const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
+                        if (isPushEnabled) {
+                            ubahTombolJadiAktif();
+                        }
+                    }, 3000);
+                } catch (err) {
+                    console.log("Error prompt:", err);
+                }
+            });
+        }
+
+        // Fungsi mengubah tampilan tombol agar berwarna hijau
+        function ubahTombolJadiAktif() {
+            const btn = document.getElementById("btnNotif");
+            if (btn) {
+                btn.innerHTML = "✅ Notifikasi Sudah Aktif";
+                btn.className = "w-full text-left px-4 py-3 bg-emerald-500/90 rounded-lg transition mt-2 text-white shadow-md font-semibold text-sm cursor-default opacity-90";
+                btn.disabled = true; 
+            }
+        }
+    </script>
+    <!-- ----------------------------------------------------------------- -->
 
 </body>
 </html>
