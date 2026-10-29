@@ -541,16 +541,17 @@
             </button>
         </div>
     </div>
-<!-- --- SCRIPT KHUSUS TOMBOL & DETEKSI HP OTOMATIS --- -->
+<!-- --- SCRIPT KHUSUS TOMBOL & DETEKSI OTOMATIS --- -->
     <script>
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         
-        // Pengecekan status langsung ke OneSignal secara real-time
+        // Pengecekan status otomatis saat halaman dibuka
         window.OneSignalDeferred.push(async function(OneSignal) {
             try {
                 const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
                 if (isPushEnabled) {
-                    ubahTombolJadiAktif();
+                    // Jika sudah aktif/centang hijau, sembunyikan tombolnya secara otomatis
+                    sembunyikanTombolNotif();
                 }
             } catch (err) {
                 console.log("Cek status OneSignal:", err);
@@ -561,7 +562,7 @@
         function subscribeOneSignal() {
             const isPushSupported = ('serviceWorker' in navigator) && ('PushManager' in window);
             
-            // Jika dibuka di browser yang tidak mendukung push (misal: dalam WhatsApp)
+            // Jika dibuka di browser yang tidak mendukung (misal: WhatsApp)
             if (!isPushSupported) {
                 const ua = navigator.userAgent || navigator.vendor || window.opera;
                 const isIos = /ipad|iphone|ipod/.test(ua.toLowerCase());
@@ -597,7 +598,7 @@
                     setTimeout(async function() {
                         const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
                         if (isPushEnabled) {
-                            ubahTombolJadiAktif();
+                            sembunyikanTombolNotif();
                         }
                     }, 3000);
                 } catch (err) {
@@ -605,15 +606,13 @@
                 }
             });
         }
-// Fungsi mengubah tampilan tombol menjadi transparan elegan jika aktif
-        function ubahTombolJadiAktif() {
+
+        // Fungsi untuk menyembunyikan tombol notifikasi jika sudah aktif
+        function sembunyikanTombolNotif() {
             const btn = document.getElementById("btnNotif");
             if (btn) {
-                btn.classList.remove("text-blue-500", "bg-white");
-                btn.classList.add("bg-white/10", "text-emerald-300", "cursor-default", "opacity-95");
-                btn.innerHTML = "✅ <span id='textNotif'>Notifikasi Aktif</span>";
-                btn.disabled = true; 
+                // Menambahkan kelas 'hidden' Tailwind CSS agar tombolnya hilang dari tampilan
+                btn.classList.add("hidden");
             }
         }
     </script>
-    <!-- ----------------------------------------------------------------- -->
