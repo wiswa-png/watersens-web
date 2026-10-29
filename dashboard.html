@@ -196,7 +196,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, get, onValue, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        // MEMASUKKAN FUNGSI UPDATE KE DALAM IMPORT FIREBASE
+        import { getDatabase, ref, get, onValue, off, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const API_URL = "https://script.google.com/macros/s/AKfycbyaOGTdPuV88e-MZfFz8LNXfsoUavRbgFsopxLQckJMuI8vcxCDbAeCQWAkv6zxz3Gx/exec"; 
 
@@ -230,6 +231,23 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+
+        // ====================================================================
+        // JEMBATAN PINTAR FIREBASE: MENGINGAT STATUS NOTIFIKASI
+        window.simpanNotifKeDatabase = function() {
+            update(ref(db, 'users/' + userId), { notifAktif: true });
+        };
+
+        // Otomatis cek saat dashboard dimuat, biarpun dibuka di WhatsApp
+        get(ref(db, 'users/' + userId)).then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (data.notifAktif === true && typeof window.ubahTombolJadiAktif === 'function') {
+                    window.ubahTombolJadiAktif(); // Langsung ubah jadi centang hijau profesional!
+                }
+            }
+        });
+        // ====================================================================
 
         let activeSensorRef = null;
         let activeLimitsRef = null; 
@@ -541,7 +559,8 @@
             </button>
         </div>
     </div>
-<!-- --- SCRIPT KHUSUS TOMBOL & DETEKSI OTOMATIS --- -->
+
+    <!-- --- SCRIPT KHUSUS TOMBOL & DETEKSI OTOMATIS --- -->
     <script>
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         
@@ -550,8 +569,9 @@
             try {
                 const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
                 if (isPushEnabled) {
-                    // Jika sudah aktif/centang hijau, sembunyikan tombolnya secara otomatis
-                    sembunyikanTombolNotif();
+                    if (typeof window.ubahTombolJadiAktif === 'function') window.ubahTombolJadiAktif();
+                    // Simpan status sukses ke Firebase agar WhatsApp tahu
+                    if (typeof window.simpanNotifKeDatabase === 'function') window.simpanNotifKeDatabase();
                 }
             } catch (err) {
                 console.log("Cek status OneSignal:", err);
@@ -598,7 +618,9 @@
                     setTimeout(async function() {
                         const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
                         if (isPushEnabled) {
-                            sembunyikanTombolNotif();
+                            if (typeof window.ubahTombolJadiAktif === 'function') window.ubahTombolJadiAktif();
+                            // Simpan status sukses ke Firebase agar WhatsApp tahu
+                            if (typeof window.simpanNotifKeDatabase === 'function') window.simpanNotifKeDatabase();
                         }
                     }, 3000);
                 } catch (err) {
@@ -607,12 +629,16 @@
             });
         }
 
-        // Fungsi untuk menyembunyikan tombol notifikasi jika sudah aktif
-        function sembunyikanTombolNotif() {
+        // Fungsi mengubah tampilan menjadi centang hijau profesional
+        window.ubahTombolJadiAktif = function() {
             const btn = document.getElementById("btnNotif");
-            if (btn) {
-                // Menambahkan kelas 'hidden' Tailwind CSS agar tombolnya hilang dari tampilan
-                btn.classList.add("hidden");
+            if (btn && !btn.disabled) {
+                btn.classList.remove("text-blue-500", "bg-white", "hover:bg-white/20");
+                btn.classList.add("bg-white/10", "text-emerald-300", "cursor-default", "opacity-95");
+                btn.innerHTML = "✅ <span id='textNotif'>Notifikasi Aktif</span>";
+                btn.disabled = true; 
             }
         }
     </script>
+</body>
+</html>
