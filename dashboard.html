@@ -67,19 +67,18 @@
                 <a href="dashboard.html" class="block px-4 py-3 bg-white/25 rounded-lg font-bold shadow-sm text-yellow-300">📊 Ringkasan Sistem</a>
                 <a href="riwayat.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">💧 Riwayat Data IPAL</a>
                 
-                <!-- --- TOMBOL NOTIFIKASI DITAMBAHKAN DI SINI --- -->
-                <button id="btnNotif" onclick="subscribeOneSignal()" class="w-full text-left px-4 py-3 bg-blue-500/80 hover:bg-blue-600 rounded-lg transition mt-2 text-white shadow-md font-semibold text-sm cursor-pointer">
-                    🔔 Aktifkan Notifikasi
-                </button>
-                <!-- -------------------------------------------- -->
-
                 <div id="adminMenu" class="hidden">
                     <a href="pabrik.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition mt-2">🏢 Manajemen Pabrik</a>
                     <a href="godmode.html" class="block px-4 py-3 hover:bg-white/10 rounded-lg transition">⚙️ Manajemen Sistem</a>
                 </div>
             </nav>
             
-            <div class="p-4 border-t border-white/20">
+            <!-- TOMBOL NOTIFIKASI DI BAWAH (DI ATAS KELUAR SISTEM) DENGAN GAYA TRANSPARAN -->
+            <div class="p-4 border-t border-white/20 space-y-2">
+                <button id="btnNotif" onclick="subscribeOneSignal()" class="w-full text-left px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition text-white shadow-sm font-semibold text-sm cursor-pointer flex items-center gap-2">
+                    🔔 <span id="textNotif">Aktifkan Notifikasi</span>
+                </button>
+                
                 <button id="btnLogout" class="w-full bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-semibold transition shadow-md">
                     Keluar Sistem
                 </button>
@@ -526,12 +525,12 @@
             </div>
             
             <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl text-xs text-blue-800 space-y-3 font-medium text-left">
-                <!-- Panduan khusus Android (Hanya muncul di HP Android) -->
+                <!-- Panduan khusus Android -->
                 <div id="panduanAndroid" class="hidden">
                     <p><b>🤖 Pengguna Android:</b><br>Buka link web ini menggunakan browser utama <b>Google Chrome</b> (atau klik titik tiga di kanan atas lalu pilih Buka di Chrome).</p>
                 </div>
                 
-                <!-- Panduan khusus iPhone/iOS (Hanya muncul di iPhone) -->
+                <!-- Panduan khusus iPhone/iOS -->
                 <div id="panduanIphone" class="hidden">
                     <p><b>🍎 Pengguna iPhone (iOS):</b><br>Buka di Safari, ketuk ikon <b>Bagikan (Share)</b> di bawah, lalu pilih <b>'Tambahkan ke Layar Utama' (Add to Home Screen)</b>.</p>
                 </div>
@@ -566,11 +565,9 @@
             const isPushSupported = ('serviceWorker' in navigator) && ('PushManager' in window);
             
             if (!isPushSupported) {
-                // Deteksi otomatis apakah perangkat yang membuka adalah iPhone atau Android
                 const ua = navigator.userAgent || navigator.vendor || window.opera;
                 const isIos = /ipad|iphone|ipod/.test(ua.toLowerCase());
 
-                // Tampilkan teks panduan yang sesuai saja secara otomatis
                 const pAndroid = document.getElementById('panduanAndroid');
                 const pIphone = document.getElementById('panduanIphone');
 
@@ -582,11 +579,9 @@
                     if (pIphone) pIphone.classList.add('hidden');
                 }
 
-                // Munculkan Modal
                 const modal = document.getElementById('modalNotif');
                 if(modal) modal.classList.remove('hidden');
                 
-                // Tutup sidebar menu agar modal terlihat jelas di layar HP
                 const sidebar = document.getElementById('sidebar');
                 const overlayMenu = document.getElementById('overlayMenu');
                 if(sidebar && !sidebar.classList.contains('-translate-x-full')) {
@@ -596,12 +591,10 @@
                 return;
             }
 
-            // Jika browser mendukung (Chrome/Safari), jalankan OneSignal
             window.OneSignalDeferred.push(async function(OneSignal) {
                 try {
                     await OneSignal.Slidedown.promptPush();
                     
-                    // Mengecek ulang 3 detik setelah diklik
                     setTimeout(async function() {
                         const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
                         if (isPushEnabled) {
@@ -614,12 +607,12 @@
             });
         }
 
-        // Fungsi mengubah tampilan tombol agar berwarna hijau
+        // Fungsi mengubah tampilan tombol menjadi transparan elegan jika aktif
         function ubahTombolJadiAktif() {
             const btn = document.getElementById("btnNotif");
             if (btn) {
-                btn.innerHTML = "✅ Notifikasi Sudah Aktif";
-                btn.className = "w-full text-left px-4 py-3 bg-emerald-500/90 rounded-lg transition mt-2 text-white shadow-md font-semibold text-sm cursor-default opacity-90";
+                btn.className = "w-full text-left px-4 py-3 bg-white/10 rounded-lg transition text-emerald-300 shadow-sm font-semibold text-sm cursor-default flex items-center gap-2 opacity-90";
+                btn.innerHTML = "✅ <span id='textNotif'>Notifikasi Aktif</span>";
                 btn.disabled = true; 
             }
         }
