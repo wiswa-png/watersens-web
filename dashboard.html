@@ -546,10 +546,12 @@
     <script>
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         
-        // Mengecek status notifikasi otomatis saat dashboard baru dibuka
         window.OneSignalDeferred.push(async function(OneSignal) {
             try {
-                if (OneSignal.User && OneSignal.User.PushSubscription) {
+                // 1. Cek apakah HP ini sudah pernah menyimpan memori aktif
+                if (localStorage.getItem("notifSudahAktif") === "true") {
+                    ubahTombolJadiAktif();
+                } else if (OneSignal.User && OneSignal.User.PushSubscription) {
                     const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
                     if (isPushEnabled) {
                         ubahTombolJadiAktif();
@@ -609,6 +611,9 @@
 
         // Fungsi mengubah tampilan tombol menjadi transparan elegan jika aktif
         function ubahTombolJadiAktif() {
+    
+            localStorage.setItem("notifSudahAktif", "true");
+
             const btn = document.getElementById("btnNotif");
             if (btn) {
                 btn.className = "w-full text-left px-4 py-3 bg-white/10 rounded-lg transition text-emerald-300 shadow-sm font-semibold text-sm cursor-default flex items-center gap-2 opacity-90";
